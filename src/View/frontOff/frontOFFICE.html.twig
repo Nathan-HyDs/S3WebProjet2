@@ -11,7 +11,7 @@
 			<table>
 				<caption>les produits + liens</caption>
 				<thead>
-				<tr><th>nom</th><th>id</th><th>type</th><th>prix</th><th>nom photo</th><th>photo</th>
+				<tr><th>nom</th><th>id</th><th>type</th><th>prix</th><th>nom photo</th><th>photo</th><th>commande</th>
 					{% if   app.session.get('droit') is defined and  app.session.get('droit') == 'DROITadmin' %}
 						<th>opération</th>
 					{% endif %}
@@ -25,13 +25,11 @@
 							{{produit.photo}}</td><td>
 							<img style="width:70px;height:95px" src="{{asset('images/')}}{{produit.photo}}" alt="image de {{produit.libelle}}" >
 						</td>
-						{% if   app.session.get('droit') is defined and  app.session.get('droit') == 'DROITadmin' %}
-							<td>
-								<a href="{{ path('produit.edit', {id: produit.id}) }}">modifier</a>
-								<a href="{{ path('produit.delete', {id: produit.id}) }}">supprimer</a>
-							</td>
-						{% endif %}
+						<td>
+							<a href="#"><img src=""></a>
+						</td>
 					</tr>
+					
 				{% endfor %}
 				<tbody>
 			</table>

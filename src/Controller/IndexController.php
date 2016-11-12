@@ -10,7 +10,7 @@ class IndexController implements ControllerProviderInterface
     public function index(Application $app)
     {
         if ($app['session']->get('droit') == 'DROITclient')
-             return $app["twig"]->render("frontOff/frontOFFICE.html.twig"); 
+            return $app["twig"]->render("panier.accueil");
         // remplacer par une redirection :  return $app->redirect($app["url_generator"]->generate("Panier.index"));
         if ($app['session']->get('droit') == 'DROITadmin')
             return $app["twig"]->render("backOff/backOFFICE.html.twig");
