@@ -26,13 +26,14 @@ class PanierController implements ControllerProviderInterface
     }
 
     public function insertPanier(Application $app){
-        
+
+        return null;
     }
 
     public function connect(Application $app)
     {
         $index = $app['controllers_factory'];
-        $index->match("/acceuil", 'App\Controller\PanierController::acceuil')->bind('accueil');
+        $index->match("/acceuil", 'App\Controller\PanierController::acceuil')->bind('panier.index');
         return $index;
     }
 }
