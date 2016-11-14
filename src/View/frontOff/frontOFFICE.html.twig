@@ -29,15 +29,29 @@
 							</div>
 						</td>
 					</tr>
-					
+
 				{% endfor %}
 				<tbody>
 			</table>
 		</div>
-		<div class="small-5 large-5 columns">
-			le panier +liens
+		<div class="small-5 large-5 columns" style="left: 100px		">
+			<table>
+				<caption>le panier +liens</caption>
+				<thead>
+				<tr>
+					<th>nom</th><th>image</th><th>quantite</th><th>prix</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for objetPanier in panier if panier is not empty %}
+					<tr>
+						<td>{{ objetPanier.nom }}</td>
+						<td><img style="width:500px;height:100px;" src="{{asset('images/')}}{{objetPanier.photo}}" alt="image de {{objetPanier.nom}}" ></td>
+						<td>{{ objetPanier.quantite }}</td><td>{{ objetPanier.prix }}</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
 		</div>
-
 	</div>
-
 {% endblock %}

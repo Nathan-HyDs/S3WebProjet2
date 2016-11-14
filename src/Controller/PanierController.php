@@ -22,12 +22,17 @@ class PanierController implements ControllerProviderInterface
 
     public function acceuil(Application $app)
     {
+        $id=3;
+        $this->panierModel=new PanierModel($app);
         $this->produitModel=new ProduitModel($app);
         $data=$this->produitModel->getAllProduits();
-        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data]);
+        $panier=$this->panierModel->getAllPanier($id);
+        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier]);
     }
 
     public function insert(Application $app,$id){
+        $id_client=3;
+
         $this->panierModel=new PanierModel($app);
         $this->produitModel=new ProduitModel($app);
 
@@ -50,7 +55,8 @@ class PanierController implements ControllerProviderInterface
             $this->panierModel->insertPanier($DonnePanier);
         }
 
-        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data]);
+        $panier=$this->panierModel->getAllPanier($id_client);
+        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier]);
     }
 
     public function connect(Application $app)

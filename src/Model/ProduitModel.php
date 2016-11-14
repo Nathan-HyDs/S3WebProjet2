@@ -21,7 +21,7 @@ class ProduitModel {
 //        return $req->fetchAll();
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
-            ->select('*')
+            ->select('p.id','p.nom','p.prix','p.photo','t.libelle','p.stock')
             ->from('produits', 'p')
             ->innerJoin('p', 'typeProduits', 't', 'p.typeProduit_id=t.id')
             ->addOrderBy('p.nom', 'ASC');

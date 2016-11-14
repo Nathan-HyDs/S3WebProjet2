@@ -19,14 +19,15 @@ class PanierModel
         $this->db = $app['db'];
     }
 
-    public function getAllPanier($id){
+    public function getAllPanier($id_user){
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
-            -> select('*')
+            -> select('p.nom','p.photo','pa.quantite','pa.prix')
             ->from('paniers','pa')
-            ->innerJoin('pa','users','u','pa.user_id=u.user_id')
-            ->where('pa.user_id='.$id)
-            ->addOrderBy('pa.nom','ASC');
+            ->innerJoin('pa','users','u','pa.user_id=u.id')
+            ->innerJoin('pa','produits','p','pa.produit_id=p.id')
+            ->where('pa.user_id='.$id_user)
+            ->addOrderBy('p.nom','ASC');
         return $queryBuilder->execute()->fetchAll();
     }
 
@@ -69,7 +70,7 @@ class PanierModel
         $queryBuilder
             ->select('*')
             ->from('paniers')
-            ->where('id= :id')
+            ->where('produit_id= :id')
             ->setParameter('id', $id);
         return $queryBuilder->execute()->fetch();
     }
