@@ -20,7 +20,7 @@
 					<tr>
 						<td>{{produit.nom}}</td><td>{{produit.id}}</td><td>{{produit.libelle}}</td><td>{{produit.prix}}€</td><td>
 							{{produit.photo}}</td><td>
-							<img style="width:500px;height:100px;" src="{{asset('images/')}}{{produit.photo}}" alt="image de {{produit.libelle}}" >
+							<img style="width:70px;height:70px" src="{{asset('images/')}}{{produit.photo}}" alt="image de {{produit.libelle}}" >
 						</td>
 						<td>{{ produit.stock }}</td>
 						<td>
@@ -34,19 +34,19 @@
 				<tbody>
 			</table>
 		</div>
-		<div class="small-5 large-5 columns" style="left: 100px		">
+		<div class="small-5 large-5 columns" style="left: 100px">
 			<table>
 				<caption>le panier +liens</caption>
 				<thead>
 				<tr>
-					<th>nom</th><th>image</th><th>quantite</th><th>prix</th>
+					<th>nom</th><th>photo</th><th>quantite</th><th>prix</th>
 				</tr>
 				</thead>
 				<tbody>
 				{% for objetPanier in panier if panier is not empty %}
 					<tr>
 						<td>{{ objetPanier.nom }}</td>
-						<td><img style="width:500px;height:100px;" src="{{asset('images/')}}{{objetPanier.photo}}" alt="image de {{objetPanier.nom}}" ></td>
+						<td><img style="width:72px;height:100px" src="{{asset('images/')}}{{objetPanier.photo}}" alt="image de {{objetPanier.nom}}" ></td>
 						<td>{{ objetPanier.quantite }}</td><td>{{ objetPanier.prix }}</td>
 					</tr>
 				{% endfor %}
