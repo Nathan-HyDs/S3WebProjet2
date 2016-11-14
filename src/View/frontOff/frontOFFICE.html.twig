@@ -11,10 +11,7 @@
 			<table>
 				<caption>les produits + liens</caption>
 				<thead>
-				<tr><th>nom</th><th>id</th><th>type</th><th>prix</th><th>nom photo</th><th>photo</th><th>commande</th>
-					{% if   app.session.get('droit') is defined and  app.session.get('droit') == 'DROITadmin' %}
-						<th>opération</th>
-					{% endif %}
+				<tr><th>nom</th><th>id</th><th>type</th><th>prix</th><th>nom photo</th><th>photo</th><th>stock</th><th>commande</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -25,9 +22,10 @@
 							{{produit.photo}}</td><td>
 							<img style="width:500px;height:100px;" src="{{asset('images/')}}{{produit.photo}}" alt="image de {{produit.libelle}}" >
 						</td>
+						<td>{{ produit.stock }}</td>
 						<td>
 							<div style="width: 50px;margin: 0px 0px 0px 15px;">
-								<a style="width: 100px" href="#"><img src="{{  asset('images/Logo-Panier.png') }}"></a>
+									<a style="width: 100px" href="{{ path('panier.insert', {id: produit.id}) }}"><img src="{{  asset('images/Logo-Panier.png') }}"></a>
 							</div>
 						</td>
 					</tr>
