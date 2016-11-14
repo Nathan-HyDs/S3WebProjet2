@@ -38,7 +38,16 @@ class PanierController implements ControllerProviderInterface
         $panier = $this->panierModel->getPanierFromProduit($id);
 
         if(empty($panier)){
-            $this->panierModel->insert($produit);
+            $DonnePanier=[
+                'id' => null,
+                'quantite' => 1,
+                'prix' => $produit["prix"],
+                'user_id' => 3,
+                'produit_id' => $produit["id"],
+                'commande_id' => 1
+            ];
+
+            $this->panierModel->insertPanier($DonnePanier);
         }
 
         return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data]);
