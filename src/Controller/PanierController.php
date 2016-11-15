@@ -55,8 +55,8 @@ class PanierController implements ControllerProviderInterface
             $this->panierModel->insertPanier($DonnePanier);
         }
 
-        $panier=$this->panierModel->getAllPanier($id_client);
-        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier]);
+
+        return $app->redirect($app["url_generator"]->generate("panier.index"));
     }
 
     public function connect(Application $app)

@@ -107,5 +107,9 @@ class PanierModel
         return $queryBuilder->execute();
     }
 
+    public function incrementStockPanier($id_produit){
+        //$queryBuilder = new
+    }
+
 
 }
