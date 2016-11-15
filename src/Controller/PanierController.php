@@ -53,6 +53,9 @@ class PanierController implements ControllerProviderInterface
             ];
 
             $this->panierModel->insertPanier($DonnePanier);
+        }else{
+            $this->panierModel->incrementStockPanier($produit["id"]);
+            $this->produitModel->decrementeStockProduit($produit["id"]);
         }
 
 

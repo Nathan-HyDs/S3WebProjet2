@@ -108,7 +108,17 @@ class PanierModel
     }
 
     public function incrementStockPanier($id_produit){
-        //$queryBuilder = new
+        $panier=$this->getPanierFromProduit($id_produit);
+
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('paniers')
+            ->set('quantite','?')
+            ->where('produit_id= ?')
+            ->setParameter(0,$panier["quantite"]+1)
+            ->setParameter(1,$id_produit)
+        ;
+        return $queryBuilder->execute();
     }
 
 
