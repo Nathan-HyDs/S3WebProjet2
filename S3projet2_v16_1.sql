@@ -3,21 +3,21 @@ DROP TABLE  IF EXISTS paniers,commandes, produits, users, typeProduits, etats;
 -- --------------------------------------------------------
 -- Structure de la table typeproduits
 --
-CREATE TABLE IF NOT EXISTS typeProduits (
+CREATE TABLE typeProduits (
   id int(10) NOT NULL,
   libelle varchar(50) DEFAULT NULL,
   PRIMARY KEY (id)
 )  DEFAULT CHARSET=utf8;
 -- Contenu de la table typeproduits
 INSERT INTO typeProduits (id, libelle) VALUES
-(1, 'Jeux video'),
-(2, 'type 2'),
-(3, 'type 3');
-
+(1, 'MMORPG'),
+(2, 'STR'),
+(3, 'FPS'),
+(4, "Hack'N'slash");
 -- --------------------------------------------------------
 -- Structure de la table etats
 
-CREATE TABLE IF NOT EXISTS etats (
+CREATE TABLE etats (
   id int(11) NOT NULL AUTO_INCREMENT,
   libelle varchar(20) NOT NULL,
   PRIMARY KEY (id)
@@ -30,7 +30,7 @@ INSERT INTO etats (id, libelle) VALUES
 -- --------------------------------------------------------
 -- Structure de la table produits
 
-CREATE TABLE IF NOT EXISTS produits (
+CREATE TABLE produits (
   id int(10) NOT NULL AUTO_INCREMENT,
   typeProduit_id int(10) DEFAULT NULL,
   nom varchar(200) DEFAULT NULL,
@@ -43,18 +43,18 @@ CREATE TABLE IF NOT EXISTS produits (
 ) DEFAULT CHARSET=utf8 ;
 
 INSERT INTO produits (id,typeProduit_id,nom,prix,photo,dispo,stock) VALUES
-(NULL,1, 'Starcraft II : Wings of Liberty','19.99','sc2wol.jpg',1,25),
-(NULL,1, 'Starcraft II : Hearth of the Swarm','19.99','sc2hots.jpg',1,30),
-(NULL,1, 'Starcraft II : Legacy of the Void','93.99','sc2lotv.jpg',1,20),
-(NULL,2, 'World of Warcraft : Gamecard 30 jours','55','wowgc2.jpg',1,44),
-(NULL,2, 'World of Warcraft : Gamecard 60 jours','55','wowgc1.jpg',1,44),
+(NULL,2, 'Starcraft II : Wings of Liberty','19.99','sc2wol.jpg',1,25),
+(NULL,2, 'Starcraft II : Hearth of the Swarm','19.99','sc2hots.jpg',1,30),
+(NULL,2, 'Starcraft II : Legacy of the Void','39.99','sc2lotv.jpg',1,20),
+(NULL,1, 'World of Warcraft : Gamecard 30 jours','12.99','wowgc2.jpg',1,44),
+(NULL,1, 'World of Warcraft : Gamecard 60 jours','25.98','wowgc1.jpg',1,44),
 (NULL,1, 'World of Warcraft : Legion','49.99','wowlegion.jpg',1,15),
-(NULL,1, 'World of Warcaft : Battlechest','55','wowbc.jpg',1,4),
-(NULL,1, 'Overwatch','39.99','ow.jpg',1,10),
-(NULL,1, 'Diablo 3','19.99','d3.jpg',1,74),
-(NULL,1, 'Diablo 3 : Reaper of Soul','55','d3rop.jpg',1,4),
-(NULL,1, 'Warcraft 3','9.9','w3.jpg',1,10),
-(NULL,1,'Warcraft 3 : Frozen Throne','9.9','w3ft.jpg',1,10);
+(NULL,1, 'World of Warcaft : Battlechest','14.99','wowbc.jpg',1,4),
+(NULL,3, 'Overwatch','39.99','ow.jpg',1,10),
+(NULL,4, 'Diablo 3','19.99','d3.jpg',1,74),
+(NULL,4, 'Diablo 3 : Reaper of Soul','19.99','d3rop.jpg',1,4),
+(NULL,2, 'Warcraft 3','9.99','w3.jpg',1,10),
+(NULL,2,'Warcraft 3 : Frozen Throne','9.99','w3ft.jpg',1,10);
 
 
 
@@ -63,7 +63,7 @@ INSERT INTO produits (id,typeProduit_id,nom,prix,photo,dispo,stock) VALUES
 -- Structure de la table user
 -- valide permet de rendre actif le compte (exemple controle par email )
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
   id int(11) NOT NULL AUTO_INCREMENT,
   email varchar(255) NOT NULL,
   password varchar(255) NOT NULL,
@@ -89,7 +89,7 @@ INSERT INTO users (id,login,password,email,valide,droit) VALUES
 
 -- --------------------------------------------------------
 -- Structure de la table commandes
-CREATE TABLE IF NOT EXISTS commandes (
+CREATE TABLE commandes (
   id int(11) NOT NULL AUTO_INCREMENT,
   user_id int(11) NOT NULL,
   prix float(6,2) NOT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS commandes (
 
 -- --------------------------------------------------------
 -- Structure de la table paniers
-CREATE TABLE IF NOT EXISTS paniers (
+CREATE TABLE paniers (
   id int(11) NOT NULL AUTO_INCREMENT,
   quantite int(11) NOT NULL,
   prix float(6,2) NOT NULL,

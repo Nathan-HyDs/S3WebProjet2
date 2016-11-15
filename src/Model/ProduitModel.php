@@ -24,6 +24,7 @@ class ProduitModel {
             ->select('p.id','p.nom','p.prix','p.photo','t.libelle','p.stock')
             ->from('produits', 'p')
             ->innerJoin('p', 'typeProduits', 't', 'p.typeProduit_id=t.id')
+            ->addOrderBy('t.id ', 'ASC')
             ->addOrderBy('p.nom', 'ASC');
         return $queryBuilder->execute()->fetchAll();
 
