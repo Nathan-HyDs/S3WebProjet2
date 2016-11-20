@@ -83,6 +83,7 @@ class ProduitModel {
         return $queryBuilder->execute();
     }
 
+
     public function decrementeStockProduit($id){
         $produit=$this->getProduit($id);
 
@@ -94,9 +95,7 @@ class ProduitModel {
             ->where('id = ?')
             ->setParameter(0, $produit["stock"]-1)
             ->setParameter(1,$id)
-            ;
+        ;
         return $queryBuilder->execute();
     }
-
-
 }
