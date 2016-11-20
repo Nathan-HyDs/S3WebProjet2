@@ -39,7 +39,7 @@
 				<caption>le panier +liens</caption>
 				<thead>
 				<tr>
-					<th>nom</th><th>photo</th><th>quantite</th><th>prix</th>
+					<th>nom</th><th>photo</th><th>quantite</th><th>prix</th><th>commande</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -48,6 +48,7 @@
 						<td>{{ objetPanier.nom }}</td>
 						<td><img style="width:72px;height:100px" src="{{asset('images/')}}{{objetPanier.photo}}" alt="image de {{objetPanier.nom}}" ></td>
 						<td>{{ objetPanier.quantite }}</td><td>{{ objetPanier.prix }}€</td>
+						<td><a href="{{ path('panier.delete', {id: objetPanier.produit_id}) }}"><img src="{{ asset('images/Logo-Suppression.png')}}"/> </a></td>
 					</tr>
 				{% endfor %}
 				</tbody>
