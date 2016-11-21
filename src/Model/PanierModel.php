@@ -135,5 +135,18 @@ class PanierModel
         return $queryBuilder->execute();
     }
 
+    public function addXStockPanier($id_produit,$nb){
+        $panier=$this->getPanierFromProduit($id_produit);
+
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('paniers')
+            ->set('quantite','?')
+            ->where('produit_id= ?')
+            ->setParameter(0,$panier["quantite"]+$nb)
+            ->setParameter(1,$id_produit)
+        ;
+        return $queryBuilder->execute();
+    }
 
 }

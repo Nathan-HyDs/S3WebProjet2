@@ -30,33 +30,45 @@ class PanierController implements ControllerProviderInterface
         return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier]);
     }
 
-    public function insert(Application $app,$id){
+    public function insert(Application $app){
         $id_client=3;
+
+        $donnees=[
+            "id"=>htmlentities($_POST["id"]),
+            "quantite"=>htmlentities($_POST["quantite"]),
+        ];
 
         $this->panierModel=new PanierModel($app);
         $this->produitModel=new ProduitModel($app);
 
         $data=$this->produitModel->getAllProduits();
 
-        $produit = $this->produitModel->getProduit($id);
+        $produit = $this->produitModel->getProduit($donnees['id']);
 
-        $panier = $this->panierModel->getPanierFromProduit($id);
+        $panier = $this->panierModel->getPanierFromProduit($donnees['id']);
 
         if($produit['stock']>=1) {
             if (empty($panier)) {
                 $DonnePanier = [
                     'id' => null,
-                    'quantite' => 1,
+                    'quantite' => $donnees['quantite'],
                     'prix' => $produit["prix"],
                     'user_id' => $id_client,
-                    'produit_id' => $produit["id"],
+                    'produit_id' => $donnees["id"],
                     'commande_id' => 1
                 ];
-
+                $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
                 $this->panierModel->insertPanier($DonnePanier);
             } else {
-                $this->panierModel->incrementStockPanier($produit["id"]);
-                $this->produitModel->decrementeStockProduit($produit["id"]);
+                if($donnees['quantite']==1){
+                    $this->panierModel->incrementStockPanier($produit["id"]);
+                    $this->produitModel->decrementeStockProduit($produit["id"]);
+                }
+                else{
+                    $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
+                    $this->panierModel->addXStockPanier($produit["id"],$donnees['quantite']);
+
+                }
             }
         }
 
@@ -75,7 +87,7 @@ class PanierController implements ControllerProviderInterface
 
         $panier = $this->panierModel->getPanierFromProduit($id);
 
-        if($panier["quantite"]==1){
+        if($panier["quantite"]<=1){
             $this->panierModel->deleteProduit($id);
         }else{
             $this->panierModel->decrementStockPanier($produit["id"]);
@@ -91,7 +103,7 @@ class PanierController implements ControllerProviderInterface
         $index = $app['controllers_factory'];
         $index->match("/acceuil", 'App\Controller\PanierController::acceuil')->bind('panier.index');
 
-        $index->get("/insert/{id}", 'App\Controller\PanierController::insert')->bind('panier.insert')->assert('id', '\d+');
+        $index->post("/insert", 'App\Controller\PanierController::insert')->bind('panier.insert');
         $index->get("/delete/{id}", 'App\Controller\PanierController::delete')->bind('panier.delete')->assert('id', '\d+');
 
         return $index;

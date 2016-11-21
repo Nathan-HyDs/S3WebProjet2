@@ -113,4 +113,19 @@ class ProduitModel {
         ;
         return $queryBuilder->execute();
     }
+
+    public function supprXStockProduit($id,$nb){
+        $produit=$this->getProduit($id);
+
+
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('produits')
+            ->set('stock','?')
+            ->where('id = ?')
+            ->setParameter(0, $produit["stock"]-$nb)
+            ->setParameter(1,$id)
+        ;
+        return $queryBuilder->execute();
+    }
 }
