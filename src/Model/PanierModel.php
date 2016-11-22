@@ -22,7 +22,7 @@ class PanierModel
     public function getAllPanier($id_user){
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
-            -> select('p.nom','p.photo','pa.quantite','pa.prix')
+            -> select('p.nom','p.photo','pa.quantite','pa.prix,pa.produit_id')
             ->from('paniers','pa')
             ->innerJoin('pa','users','u','pa.user_id=u.id')
             ->innerJoin('pa','produits','p','pa.produit_id=p.id')
@@ -101,15 +101,65 @@ class PanierModel
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
             ->delete('paniers')
-            ->where('id = :id')
+            ->where('produit_id = :id')
             ->setParameter('id',(int)$id)
         ;
         return $queryBuilder->execute();
     }
 
     public function incrementStockPanier($id_produit){
-        //$queryBuilder = new
+        $panier=$this->getPanierFromProduit($id_produit);
+
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('paniers')
+            ->set('quantite','?')
+            ->where('produit_id= ?')
+            ->setParameter(0,$panier["quantite"]+1)
+            ->setParameter(1,$id_produit)
+        ;
+        return $queryBuilder->execute();
     }
 
+    public function decrementStockPanier($id_produit){
+        $panier=$this->getPanierFromProduit($id_produit);
 
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('paniers')
+            ->set('quantite','?')
+            ->where('produit_id= ?')
+            ->setParameter(0,$panier["quantite"]-1)
+            ->setParameter(1,$id_produit)
+        ;
+        return $queryBuilder->execute();
+    }
+
+    public function addXStockPanier($id_produit,$nb){
+        $panier=$this->getPanierFromProduit($id_produit);
+
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('paniers')
+            ->set('quantite','?')
+            ->where('produit_id= ?')
+            ->setParameter(0,$panier["quantite"]+$nb)
+            ->setParameter(1,$id_produit)
+        ;
+        return $queryBuilder->execute();
+    }
+
+    public function deleteXStockPanier($id_produit,$nb){
+        $panier=$this->getPanierFromProduit($id_produit);
+
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('paniers')
+            ->set('quantite','?')
+            ->where('produit_id= ?')
+            ->setParameter(0,$panier["quantite"]-$nb)
+            ->setParameter(1,$id_produit)
+        ;
+        return $queryBuilder->execute();
+    }
 }

@@ -23,10 +23,19 @@
 							<img style="width:70px;height:70px" src="{{asset('images/')}}{{produit.photo}}" alt="image de {{produit.libelle}}" >
 						</td>
 						<td>{{ produit.stock }}</td>
+
 						<td>
-							<div style="width: 50px;margin: 0px 0px 0px 15px;">
-									<a style="width: 100px" href="{{ path('panier.insert', {id: produit.id}) }}"><img src="{{  asset('images/Logo-Panier.png') }}"></a>
-							</div>
+						<a href="#" data-dropdown="drop{{ produit.id }}"><img style="width: 100px" src="{{  asset('images/Logo-Panier.png') }}"></a>
+							<ul id="drop{{ produit.id }}" class="f-dropdown content" data-dropdown-content>
+                                <form action="{{ path('panier.insert')}}" method="post">
+                                    <label>Nombre :
+                                        <input type="text" name="quantite" value="1">
+                                    </label>
+                                        <input type="hidden" name="id" value="{{ produit.id }}">
+
+                                        <input class="tiny round button success" type="submit">
+                                </form>
+                            </ul>
 						</td>
 					</tr>
 
@@ -39,7 +48,7 @@
 				<caption>le panier +liens</caption>
 				<thead>
 				<tr>
-					<th>nom</th><th>photo</th><th>quantite</th><th>prix</th>
+					<th>nom</th><th>photo</th><th>quantite</th><th>prix</th><th>commande</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -48,6 +57,19 @@
 						<td>{{ objetPanier.nom }}</td>
 						<td><img style="width:72px;height:100px" src="{{asset('images/')}}{{objetPanier.photo}}" alt="image de {{objetPanier.nom}}" ></td>
 						<td>{{ objetPanier.quantite }}</td><td>{{ objetPanier.prix }}€</td>
+						<td>
+							<a href="#" data-dropdown="dropPanier{{ objetPanier.produit_id }}"><img style="width: 100px" src="{{  asset('images/Logo-Suppression.png') }}"></a>
+							<ul id="dropPanier{{ objetPanier.produit_id }}" class="f-dropdown content" data-dropdown-content>
+								<form action="{{ path('panier.delete')}}" method="post">
+									<label>Nombre :
+										<input type="text" name="quantite" value="1">
+									</label>
+									<input type="hidden" name="id" value="{{ objetPanier.produit_id}}">
+
+									<input class="tiny round alert button " type="submit">
+								</form>
+							</ul>
+						</td>
 					</tr>
 				{% endfor %}
 				</tbody>
