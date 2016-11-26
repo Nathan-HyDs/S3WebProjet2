@@ -55,7 +55,7 @@
 				<tr>
 					<th>nom</th><th>photo</th><th>quantite</th><th>prix</th><th>
 					{% if panier is empty %}<a class="disabled tiny success button" href="#">Commander</a>
-					{% else  %}<a class="disabled tiny success button" href="#">Commander</a> </th>{% endif %}</th>
+					{% else  %}<a class="tiny success button" href="{{ path('panier.newCommande') }}">Commander</a> </th>{% endif %}</th>
 				</tr>
 				</thead>
 				<tbody>

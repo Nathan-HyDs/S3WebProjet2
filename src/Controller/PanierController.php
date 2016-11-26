@@ -10,6 +10,7 @@ namespace App\Controller;
 
 use App\Model\ProduitModel;
 use App\Model\PanierModel;
+use App\Model\CommandeModel;
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;   // modif version 2.0
 
@@ -19,6 +20,8 @@ class PanierController implements ControllerProviderInterface
 
     private $produitModel;
     private $panierModel;
+    private $commandeModel;
+
 
     public function acceuil(Application $app)
     {
@@ -127,11 +130,46 @@ class PanierController implements ControllerProviderInterface
         return $app->redirect($app["url_generator"]->generate("panier.index"));
     }
 
+    public function newCommande(Application $app){
+        $id_client=$app['session']->get('user_id');
+
+        $this->panierModel=new PanierModel($app);
+        $this->produitModel=new ProduitModel($app);
+        $this->commandeModel=new CommandeModel($app);
+
+        $paniers=$this->panierModel->getAllPanier($id_client);
+
+        $prixTotale=$this->panierModel->getPrixTotaleOfPanier($id_client)['prixTot'];
+
+        $donnees=[
+            "id"=>null,
+            "user_id"=>$id_client,
+            "prix"=>0,
+            "date_achat"=>null,
+            "etat_id"=>1
+        ];
+
+        $this->commandeModel->createCommande($donnees);
+        $commande=$this->commandeModel->findCommadeWithoutPrice($id_client);
+
+
+
+        $this->commandeModel->setupPriceCommande($commande['id'],$prixTotale);
+
+
+        foreach ($paniers as $panier){
+            $this->panierModel->setCommande($panier['id'],$commande['id']);
+        }
+
+       return $app->redirect($app["url_generator"]->generate("panier.index"));
+    }
+
     public function connect(Application $app)
     {
         $index = $app['controllers_factory'];
         $index->match("/acceuil", 'App\Controller\PanierController::acceuil')->bind('panier.index');
 
+        $index->match("/newCommande", 'App\Controller\PanierController::newCommande')->bind('panier.newCommande');
         $index->post("/insert", 'App\Controller\PanierController::insert')->bind('panier.insert');
         $index->post("/delete", 'App\Controller\PanierController::delete')->bind('panier.delete');
 
