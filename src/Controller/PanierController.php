@@ -59,21 +59,21 @@ class PanierController implements ControllerProviderInterface
                 ];
                 $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
                 $this->panierModel->insertPanier($DonnePanier);
-                if($donnees['quantite']==1){
+            }
+            else if($donnees['quantite']==1){
                     $this->panierModel->incrementStockPanier($produit["id"]);
                     $this->produitModel->decrementeStockProduit($produit["id"]);
                 }
-                else if($donnees['quantite']){
+                else{
                     $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
                     $this->panierModel->addXStockPanier($produit["id"],$donnees['quantite']);
                 }
             }
-        }
         else{
             $donnees['error']="Ce produit n'est pas en stock en assez grande quantitée !";
         }
 
-
+    echo $donnees['quantite'];
         $data=$this->produitModel->getAllProduits();
         $panier=$this->panierModel->getAllPanier($id_client);
 
