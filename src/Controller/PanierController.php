@@ -27,7 +27,16 @@ class PanierController implements ControllerProviderInterface
         $this->produitModel=new ProduitModel($app);
         $data=$this->produitModel->getAllProduits();
         $panier=$this->panierModel->getAllPanier($id);
-        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier]);
+
+        if(!empty($app["session"]->get("donnees"))){
+            $donnees=$app["session"]->get("donnees");
+            $app["session"]->set('donnees',null);
+            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier , 'donnees'=>$donnees]);
+
+        }
+        else{
+            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier]);
+        }
     }
 
     public function insert(Application $app){
@@ -73,11 +82,11 @@ class PanierController implements ControllerProviderInterface
             $donnees['error']="Ce produit n'est pas en stock en assez grande quantitée !";
         }
 
-    echo $donnees['quantite'];
-        $data=$this->produitModel->getAllProduits();
-        $panier=$this->panierModel->getAllPanier($id_client);
 
-        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier, 'donnees'=>$donnees]);
+        $app["session"]->set("donnees",$donnees);
+
+        return $app->redirect($app["url_generator"]->generate("panier.index"));
+
     }
 
     public function delete(Application $app){
@@ -114,10 +123,10 @@ class PanierController implements ControllerProviderInterface
             }
         }
 
-        $data=$this->produitModel->getAllProduits();
-        $panier=$this->panierModel->getAllPanier($id_client);
+        $app["session"]->set("donnees",$donnees);
 
-        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier, 'donnees'=>$donnees]);
+        return $app->redirect($app["url_generator"]->generate("panier.index"));
+
     }
 
     public function connect(Application $app)
