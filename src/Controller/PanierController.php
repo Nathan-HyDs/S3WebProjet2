@@ -47,7 +47,7 @@ class PanierController implements ControllerProviderInterface
 
         $panier = $this->panierModel->getPanierFromProduit($donnees['id']);
 
-        if($produit['stock']>=1) {
+        if($produit['stock']>=$donnees['quantite']) {
             if (empty($panier)) {
                 $DonnePanier = [
                     'id' => null,
@@ -59,20 +59,25 @@ class PanierController implements ControllerProviderInterface
                 ];
                 $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
                 $this->panierModel->insertPanier($DonnePanier);
-            } else {
                 if($donnees['quantite']==1){
                     $this->panierModel->incrementStockPanier($produit["id"]);
                     $this->produitModel->decrementeStockProduit($produit["id"]);
                 }
-                else{
+                else if($donnees['quantite']){
                     $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
                     $this->panierModel->addXStockPanier($produit["id"],$donnees['quantite']);
-
                 }
             }
         }
+        else{
+            $donnees['error']="Ce produit n'est pas en stock en assez grande quantitée !";
+        }
 
-        return $app->redirect($app["url_generator"]->generate("panier.index"));
+
+        $data=$this->produitModel->getAllProduits();
+        $panier=$this->panierModel->getAllPanier($id_client);
+
+        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier, 'donnees'=>$donnees]);
     }
 
     public function delete(Application $app){
@@ -92,7 +97,7 @@ class PanierController implements ControllerProviderInterface
 
         $panier = $this->panierModel->getPanierFromProduit($donnees['id']);
 
-        if($panier["quantite"]<=$donnees['quantite']){
+        if($panier["quantite"]==$donnees['quantite']){
             $this->panierModel->deleteProduit($donnees['id']);
             $this->produitModel->addXStockProduit($donnees['id'],$panier["quantite"]);
         }else{
@@ -100,14 +105,19 @@ class PanierController implements ControllerProviderInterface
                 $this->panierModel->decrementStockPanier($produit["id"]);
                 $this->produitModel->incrementeStockProduit($produit["id"]);
             }
-            else{
+            else if($panier["quantite"]>$donnees['quantite']){
                 $this->panierModel->deleteXStockPanier($produit["id"],$donnees['quantite']);
                 $this->produitModel->addXStockProduit($produit["id"],$donnees['quantite']);
             }
+            else{
+                $donnees["error"]="Attention il n'y a pas autant de produit à enlever !";
+            }
         }
 
+        $data=$this->produitModel->getAllProduits();
+        $panier=$this->panierModel->getAllPanier($id_client);
 
-        return $app->redirect($app["url_generator"]->generate("panier.index"));
+        return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier, 'donnees'=>$donnees]);
     }
 
     public function connect(Application $app)
