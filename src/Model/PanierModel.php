@@ -26,7 +26,7 @@ class PanierModel
             ->from('paniers','pa')
             ->innerJoin('pa','users','u','pa.user_id=u.id')
             ->innerJoin('pa','produits','p','pa.produit_id=p.id')
-            ->where('pa.user_id='.$id_user)
+            ->where('pa.user_id='.$id_user.' and commande_id is NULL')
             ->addOrderBy('p.nom','ASC');
         return $queryBuilder->execute()->fetchAll();
     }
@@ -65,13 +65,15 @@ class PanierModel
         return $queryBuilder->execute()->fetch();
     }
 
-    function getPanierFromProduit($id) {
+    function getPanierFromProduitAndUser($id_produit, $id_user) {
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
             ->select('*')
             ->from('paniers')
-            ->where('produit_id= :id')
-            ->setParameter('id', $id);
+            ->where('produit_id= :id and user_id= :id_user and commande_id is NULL')
+            ->setParameter('id', $id_produit)
+            ->setParameter('id_user', $id_user);
+
         return $queryBuilder->execute()->fetch();
     }
 
@@ -97,68 +99,75 @@ class PanierModel
         return $queryBuilder->execute();
     }
 
-    public function deleteProduit($id) {
+    public function deleteProduit($id_produit, $id_user) {
+        $panier=$this->getPanierFromProduitAndUser($id_produit,$id_user);
+        print_r($panier);
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
             ->delete('paniers')
-            ->where('produit_id = :id')
-            ->setParameter('id',(int)$id)
+            ->where('produit_id = :id_produit AND id= :id')
+            ->setParameter('id_produit',(int)$id_produit)
+            ->setParameter('id',$panier['id'])
         ;
         return $queryBuilder->execute();
     }
 
-    public function incrementStockPanier($id_produit){
-        $panier=$this->getPanierFromProduit($id_produit);
+    public function incrementStockPanier($id_produit,$id_user){
+        $panier=$this->getPanierFromProduitAndUser($id_produit,$id_user);
 
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
             ->update('paniers')
             ->set('quantite','?')
-            ->where('produit_id= ?')
+            ->where('produit_id= ? AND id= ?')
             ->setParameter(0,$panier["quantite"]+1)
             ->setParameter(1,$id_produit)
+            ->setParameter(2,$panier['id'])
         ;
         return $queryBuilder->execute();
     }
 
-    public function decrementStockPanier($id_produit){
-        $panier=$this->getPanierFromProduit($id_produit);
+    public function decrementStockPanier($id_produit,$id_user){
+        $panier=$this->getPanierFromProduitAndUser($id_produit,$id_user);
 
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
             ->update('paniers')
             ->set('quantite','?')
-            ->where('produit_id= ?')
+            ->where('produit_id= ? AND id= ?')
             ->setParameter(0,$panier["quantite"]-1)
             ->setParameter(1,$id_produit)
+            ->setParameter(2,$panier['id'])
         ;
         return $queryBuilder->execute();
     }
 
-    public function addXStockPanier($id_produit,$nb){
-        $panier=$this->getPanierFromProduit($id_produit);
+    public function addXStockPanier($id_produit,$id_user,$nb){
+        $panier=$this->getPanierFromProduitAndUser($id_produit,$id_user);
 
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
             ->update('paniers')
             ->set('quantite','?')
-            ->where('produit_id= ?')
+            ->where('produit_id= ? AND id= ?')
             ->setParameter(0,$panier["quantite"]+$nb)
             ->setParameter(1,$id_produit)
+            ->setParameter(2,$panier['id'])
         ;
         return $queryBuilder->execute();
     }
 
-    public function deleteXStockPanier($id_produit,$nb){
-        $panier=$this->getPanierFromProduit($id_produit);
+    public function deleteXStockPanier($id_produit,$id_user,$nb){
+        $panier=$this->getPanierFromProduitAndUser($id_produit,$id_user);
 
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
             ->update('paniers')
             ->set('quantite','?')
-            ->where('produit_id= ?')
+            ->where('produit_id= ? AND id= ?')
             ->setParameter(0,$panier["quantite"]-$nb)
             ->setParameter(1,$id_produit)
+            ->setParameter(2,$panier['id'])
         ;
         return $queryBuilder->execute();
     }

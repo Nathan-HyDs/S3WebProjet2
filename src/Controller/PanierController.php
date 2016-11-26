@@ -22,7 +22,7 @@ class PanierController implements ControllerProviderInterface
 
     public function acceuil(Application $app)
     {
-        $id=3;
+        $id=$app['session']->get('user_id');
         $this->panierModel=new PanierModel($app);
         $this->produitModel=new ProduitModel($app);
         $data=$this->produitModel->getAllProduits();
@@ -40,7 +40,7 @@ class PanierController implements ControllerProviderInterface
     }
 
     public function insert(Application $app){
-        $id_client=3;
+        $id_client=$app['session']->get('user_id');
 
         $donnees=[
             "id"=>htmlentities($_POST["id"]),
@@ -50,11 +50,10 @@ class PanierController implements ControllerProviderInterface
         $this->panierModel=new PanierModel($app);
         $this->produitModel=new ProduitModel($app);
 
-        $data=$this->produitModel->getAllProduits();
 
         $produit = $this->produitModel->getProduit($donnees['id']);
 
-        $panier = $this->panierModel->getPanierFromProduit($donnees['id']);
+        $panier = $this->panierModel->getPanierFromProduitAndUser($donnees['id'],$id_client);
 
         if($produit['stock']>=$donnees['quantite']) {
             if (empty($panier)) {
@@ -64,18 +63,18 @@ class PanierController implements ControllerProviderInterface
                     'prix' => $produit["prix"],
                     'user_id' => $id_client,
                     'produit_id' => $donnees["id"],
-                    'commande_id' => 1
+                    'commande_id' => null
                 ];
                 $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
                 $this->panierModel->insertPanier($DonnePanier);
             }
             else if($donnees['quantite']==1){
-                    $this->panierModel->incrementStockPanier($produit["id"]);
+                    $this->panierModel->incrementStockPanier($produit["id"],$id_client);
                     $this->produitModel->decrementeStockProduit($produit["id"]);
                 }
                 else{
                     $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
-                    $this->panierModel->addXStockPanier($produit["id"],$donnees['quantite']);
+                    $this->panierModel->addXStockPanier($produit["id"],$id_client,$donnees['quantite']);
                 }
             }
         else{
@@ -90,7 +89,7 @@ class PanierController implements ControllerProviderInterface
     }
 
     public function delete(Application $app){
-        $id_client=3;
+        $id_client=$app['session']->get('user_id');
 
         $donnees=[
             "id"=>htmlentities($_POST["id"]),
@@ -103,19 +102,19 @@ class PanierController implements ControllerProviderInterface
         $data=$this->produitModel->getAllProduits();
 
         $produit = $this->produitModel->getProduit($donnees['id']);
+        $panier = $this->panierModel->getPanierFromProduitAndUser($donnees['id'],$id_client);
 
-        $panier = $this->panierModel->getPanierFromProduit($donnees['id']);
 
         if($panier["quantite"]==$donnees['quantite']){
-            $this->panierModel->deleteProduit($donnees['id']);
+            $this->panierModel->deleteProduit($donnees['id'],$id_client);
             $this->produitModel->addXStockProduit($donnees['id'],$panier["quantite"]);
         }else{
             if($donnees['quantite']==1){
-                $this->panierModel->decrementStockPanier($produit["id"]);
+                $this->panierModel->decrementStockPanier($produit["id"],$id_client);
                 $this->produitModel->incrementeStockProduit($produit["id"]);
             }
             else if($panier["quantite"]>$donnees['quantite']){
-                $this->panierModel->deleteXStockPanier($produit["id"],$donnees['quantite']);
+                $this->panierModel->deleteXStockPanier($produit["id"],$id_client,$donnees['quantite']);
                 $this->produitModel->addXStockProduit($produit["id"],$donnees['quantite']);
             }
             else{
@@ -126,7 +125,6 @@ class PanierController implements ControllerProviderInterface
         $app["session"]->set("donnees",$donnees);
 
         return $app->redirect($app["url_generator"]->generate("panier.index"));
-
     }
 
     public function connect(Application $app)
