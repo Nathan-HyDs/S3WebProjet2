@@ -27,8 +27,24 @@ class CommandeModel
             ->select('c.id','c.user_id','c.prix','c.date_achat','c.etat_id')
             ->from('commandes', 'c')
             ->innerJoin('c', 'users', 'u', 'c.user_id=u.id')
+            ->innerJoin('c', 'etats', 'e', 'e.id=c.etat_id')
             ->addOrderBy('c.date_achat ', 'ASC')
             ->addOrderBy('c.id', 'ASC');
+        return $queryBuilder->execute()->fetchAll();
+
+    }
+
+    public function getAllCommandesFromClient() {
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->select('c.id','c.user_id','c.prix','c.date_achat','c.etat_id')
+            ->from('commandes', 'c')
+            ->innerJoin('c', 'users', 'u', 'c.user_id=u.id')
+            ->innerJoin('c', 'etats', 'e', 'e.id=c.etat_id')
+            ->addOrderBy('c.date_achat ', 'ASC')
+            ->addOrderBy('c.id', 'ASC')
+            ->where(''
+            );
         return $queryBuilder->execute()->fetchAll();
 
     }

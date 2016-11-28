@@ -11,6 +11,18 @@
 	{% endif %}
 	<h1> Projet 2 web : site de vente Espace client </h1>
 
+
+
+	<div id="myModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+		<h2 id="modalTitle">Etes vous sur de vouloir commander ?.</h2>
+		<p class="lead">Prix totale :
+		{% if donnees.pricePanier is defined %}
+			{{ donnees.pricePanier }}
+		{% endif %}</p>
+		<a href="{{ path('panier.newCommande')}}" class="button"> Je suis sur </a>
+		<a class="close-reveal-modal" aria-label="Close">&#215;</a>
+	</div>
+
 	<div class="row">
 		<div class="small-8 large-8 columns">
 			<table>
@@ -55,7 +67,7 @@
 				<tr>
 					<th>nom</th><th>photo</th><th>quantite</th><th>prix</th><th>
 					{% if panier is empty %}<a class="disabled tiny success button" href="#">Commander</a>
-					{% else  %}<a class="tiny success button" href="{{ path('panier.newCommande') }}">Commander</a> </th>{% endif %}</th>
+					{% else  %}<a class="tiny success button" href="#" data-reveal-id="myModal" > Commander</a> </th>{% endif %}</th>
 				</tr>
 				</thead>
 				<tbody>

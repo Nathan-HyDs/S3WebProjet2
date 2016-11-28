@@ -30,15 +30,18 @@ class PanierController implements ControllerProviderInterface
         $this->produitModel=new ProduitModel($app);
         $data=$this->produitModel->getAllProduits();
         $panier=$this->panierModel->getAllPanier($id);
+        $price=$this->panierModel->getPrixTotaleOfPanier($id);
 
         if(!empty($app["session"]->get("donnees"))){
             $donnees=$app["session"]->get("donnees");
+            $donnees["pricePanier"]=$price["prixTot"];
             $app["session"]->set('donnees',null);
             return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier , 'donnees'=>$donnees]);
 
         }
         else{
-            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier]);
+            $donnees["pricePanier"]=$price["prixTot"];
+            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier,'donnees'=>$donnees]);
         }
     }
 
@@ -50,6 +53,7 @@ class PanierController implements ControllerProviderInterface
             "quantite"=>htmlentities($_POST["quantite"]),
         ];
 
+
         $this->panierModel=new PanierModel($app);
         $this->produitModel=new ProduitModel($app);
 
@@ -58,20 +62,21 @@ class PanierController implements ControllerProviderInterface
 
         $panier = $this->panierModel->getPanierFromProduitAndUser($donnees['id'],$id_client);
 
-        if($produit['stock']>=$donnees['quantite']) {
-            if (empty($panier)) {
-                $DonnePanier = [
-                    'id' => null,
-                    'quantite' => $donnees['quantite'],
-                    'prix' => $produit["prix"],
-                    'user_id' => $id_client,
-                    'produit_id' => $donnees["id"],
-                    'commande_id' => null
-                ];
-                $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
-                $this->panierModel->insertPanier($DonnePanier);
-            }
-            else if($donnees['quantite']==1){
+        if(is_numeric($donnees["quantite"]) and $donnees["quantite"]>0){
+            if($produit['stock']>=$donnees['quantite']) {
+                if (empty($panier)) {
+                    $DonnePanier = [
+                        'id' => null,
+                        'quantite' => $donnees['quantite'],
+                        'prix' => $produit["prix"],
+                        'user_id' => $id_client,
+                        'produit_id' => $donnees["id"],
+                        'commande_id' => null
+                    ];
+                    $this->produitModel->supprXStockProduit($produit["id"],$donnees['quantite']);
+                    $this->panierModel->insertPanier($DonnePanier);
+                }
+                else if($donnees['quantite']==1){
                     $this->panierModel->incrementStockPanier($produit["id"],$id_client);
                     $this->produitModel->decrementeStockProduit($produit["id"]);
                 }
@@ -80,9 +85,14 @@ class PanierController implements ControllerProviderInterface
                     $this->panierModel->addXStockPanier($produit["id"],$id_client,$donnees['quantite']);
                 }
             }
-        else{
-            $donnees['error']="Ce produit n'est pas en stock en assez grande quantitée !";
+            else{
+                $donnees['error']="Ce produit n'est pas en stock en assez grande quantitée !";
+            }
         }
+        else{
+            $donnees["error"]="Erreur de saisie";
+        }
+
 
 
         $app["session"]->set("donnees",$donnees);
@@ -107,22 +117,24 @@ class PanierController implements ControllerProviderInterface
         $produit = $this->produitModel->getProduit($donnees['id']);
         $panier = $this->panierModel->getPanierFromProduitAndUser($donnees['id'],$id_client);
 
-
-        if($panier["quantite"]==$donnees['quantite']){
-            $this->panierModel->deleteProduit($donnees['id'],$id_client);
-            $this->produitModel->addXStockProduit($donnees['id'],$panier["quantite"]);
-        }else{
-            if($donnees['quantite']==1){
-                $this->panierModel->decrementStockPanier($produit["id"],$id_client);
-                $this->produitModel->incrementeStockProduit($produit["id"]);
+        if(is_numeric($donnees["quantite"]) and $donnees["quantite"]>0) {
+            if ($panier["quantite"] == $donnees['quantite']) {
+                $this->panierModel->deleteProduit($donnees['id'], $id_client);
+                $this->produitModel->addXStockProduit($donnees['id'], $panier["quantite"]);
+            } else {
+                if ($donnees['quantite'] == 1) {
+                    $this->panierModel->decrementStockPanier($produit["id"], $id_client);
+                    $this->produitModel->incrementeStockProduit($produit["id"]);
+                } else if ($panier["quantite"] > $donnees['quantite']) {
+                    $this->panierModel->deleteXStockPanier($produit["id"], $id_client, $donnees['quantite']);
+                    $this->produitModel->addXStockProduit($produit["id"], $donnees['quantite']);
+                } else {
+                    $donnees["error"] = "Attention il n'y a pas autant de produit à enlever !";
+                }
             }
-            else if($panier["quantite"]>$donnees['quantite']){
-                $this->panierModel->deleteXStockPanier($produit["id"],$id_client,$donnees['quantite']);
-                $this->produitModel->addXStockProduit($produit["id"],$donnees['quantite']);
-            }
-            else{
-                $donnees["error"]="Attention il n'y a pas autant de produit à enlever !";
-            }
+        }
+        else{
+            $donnees["error"]="Erreur de saisie";
         }
 
         $app["session"]->set("donnees",$donnees);
