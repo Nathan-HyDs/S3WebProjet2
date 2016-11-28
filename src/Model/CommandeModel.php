@@ -21,6 +21,18 @@ class CommandeModel
         $this->db = $app['db'];
     }
 
+    public function getAllCommandes() {
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->select('c.id','c.user_id','c.prix','c.date_achat','c.etat_id')
+            ->from('commandes', 'c')
+            ->innerJoin('c', 'users', 'u', 'c.user_id=u.id')
+            ->addOrderBy('c.date_achat ', 'ASC')
+            ->addOrderBy('c.id', 'ASC');
+        return $queryBuilder->execute()->fetchAll();
+
+    }
+
     public function createCommande($donnees) {
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder->insert('commandes')
