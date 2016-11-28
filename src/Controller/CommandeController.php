@@ -13,6 +13,7 @@ class CommandeController implements ControllerProviderInterface
 {
     private $produitModel;
     private $commandeModel;
+    private $panierModel;
 
 
     public function initModel(Application $app){  //  ne fonctionne pas dans le const
@@ -25,26 +26,36 @@ class CommandeController implements ControllerProviderInterface
     }
 
     public function show(Application $app) {
+        $id=$app['session']->get('user_id');
         $this->commandeModel = new CommandeModel($app);
-        $commandes = $this->commandeModel->getAllCommandes();
-        return $app["twig"]->render('backOff/Commande/show.html.twig',['commandes'=>$commandes]);
-    }
 
-    public function delete(Application $app) {
-        $this->commandeModel = new CommandeModel($app);
-        $commandes = $this->commandeModel->getAllCommandes();
-        return $app["twig"]->render('backOff/Commande/delete.html.twig',['commandes'=>$commandes]);
-    }
-
-    public function validFormDelete(Application $app, Request $req) {
-        $id=$app->escape($req->get('id'));
-        if (is_numeric($id)) {
-            $this->commandeModel = new CommandeModel($app);
-            $this->commandeModel->deleteCommande($id);
-            return $app->redirect($app["url_generator"]->generate("produit.index"));
+        if ($app['session']->get('droit') == 'DROITclient'){
+            $commandes = $this->commandeModel->getAllCommandesFromClient($id);
+            return $app["twig"]->render("frontOff/showCommandeFrontOffice.html.twig",['data'=>$commandes]);
         }
-        else
-            return $app->abort(404, 'error Pb id form Delete');
+        if ($app['session']->get('droit') == 'DROITadmin'){
+            $commandes = $this->commandeModel->getAllCommandes();
+            return $app["twig"]->render("backOff/showCommandeFrontOffice.html.twig",['data'=>$commandes]);
+        }
+
+    }
+
+    public function validCommande(Application $app,$id){
+        $this->commandeModel=new CommandeModel($app);
+        $this->commandeModel->validCommande($id);
+        return $app->redirect($app["url_generator"]->generate("commande.show"));
+    }
+
+
+    public function delete(Application $app,$id) {
+        $this->commandeModel = new CommandeModel($app);
+        $this->panierModel = new PanierModel($app);
+
+        $this->panierModel->deletePanierByCommande($id);
+        $this->commandeModel->deleteCommande($id);
+
+        return $app->redirect($app["url_generator"]->generate("commande.show"));
+
     }
 
 
@@ -73,20 +84,12 @@ class CommandeController implements ControllerProviderInterface
     public function connect(Application $app) {  //http://silex.sensiolabs.org/doc/providers.html#controller-providers
         $controllers = $app['controllers_factory'];
 
-        $controllers->get('/', 'App\Controller\produitController::index')->bind('produit.index');
-        $controllers->get('/show', 'App\Controller\produitController::show')->bind('produit.show');
+        $controllers->match('/', 'App\Controller\commandeController::index')->bind('commande.index');
+        $controllers->match('/show', 'App\Controller\commandeController::show')->bind('commande.show');
 
-        $controllers->get('/add', 'App\Controller\produitController::add')->bind('produit.add');
-        $controllers->post('/add', 'App\Controller\produitController::validFormAdd')->bind('produit.validFormAdd');
+        $controllers->get('/validCommande/{id}', 'App\Controller\commandeController::validCommande')->bind('commande.validCommande')->assert('id', '\d+');
+        $controllers->get('/delete/{id}', 'App\Controller\commandeController::delete')->bind('commande.delete')->assert('id', '\d+');
 
-        $controllers->get('/delete/{id}', 'App\Controller\produitController::delete')->bind('produit.delete')->assert('id', '\d+');
-        $controllers->delete('/delete', 'App\Controller\produitController::validFormDelete')->bind('produit.validFormDelete');
-
-        $controllers->get('/edit/{id}', 'App\Controller\produitController::edit')->bind('produit.edit')->assert('id', '\d+');
-        $controllers->put('/edit', 'App\Controller\produitController::validFormEdit')->bind('produit.validFormEdit');
-
-        $controllers->get('/edit/{id}', 'App\Controller\commandeController::edit')->bind('produit.edit')->assert('id', '\d+');
-        $controllers->put('/edit', 'App\Controller\commandeController::validFormEdit')->bind('produit.validFormEdit');
 
         return $controllers;
     }

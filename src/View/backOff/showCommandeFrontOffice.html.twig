@@ -5,12 +5,14 @@
             <table>
                 <caption>Recapitulatifs des produits (avec twig)</caption>
                 <thead>
-                <tr><th>prix</th><th>data achat</th><th>etat_id</th></tr>
+                    <tr><th>nom client</th><th>prix</th><th>data achat</th><th>etat_id</th><th>commande</th></tr>
                 </thead>
                 <tbody>
                 {% for commande in data if data is not empty %}
                     <tr>
-                        <td>{{commande.prix}}</td><td>{{commande.date_achat}}</td><td>{{commande.libelle}}</td><td>
+                        <td>{{ commande.login }}</td><td>{{commande.prix}}</td><td>{{commande.date_achat}}</td><td>{{commande.libelle}}</td>
+                        <td><a href="{{ path('commande.validCommande', {id: commande.id}) }}">Validez</a>
+                        <a href="{{ path('commande.delete', {id: commande.id}) }}">Supprimez</a></td>
                     </tr>
                 {% endfor %}
                 <tbody>

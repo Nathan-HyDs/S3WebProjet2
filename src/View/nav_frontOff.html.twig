@@ -16,12 +16,12 @@
             <li><a href="#">rechercher un produit </a></li>
           </ul>
         </li>
-        <li><a href="">panier</a>
+        <li><a href="{{ path('panier.index') }}">panier</a>
 
         </li>
         <li class="has-dropdown"><a href="#">mon compte</a>
           <ul class="dropdown">
-            <li><a href="#">mes commandes</a></li>
+            <li><a href="{{ path('commande.show') }}">mes commandes</a></li>
             <li><a href="#">mes coordonnées</a></li>
           </ul>
         </li>

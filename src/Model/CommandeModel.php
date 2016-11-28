@@ -24,7 +24,7 @@ class CommandeModel
     public function getAllCommandes() {
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
-            ->select('c.id','c.user_id','c.prix','c.date_achat','c.etat_id')
+            ->select('u.login','c.id','c.user_id','c.prix','c.date_achat','c.etat_id','e.libelle')
             ->from('commandes', 'c')
             ->innerJoin('c', 'users', 'u', 'c.user_id=u.id')
             ->innerJoin('c', 'etats', 'e', 'e.id=c.etat_id')
@@ -34,17 +34,18 @@ class CommandeModel
 
     }
 
-    public function getAllCommandesFromClient() {
+    public function getAllCommandesFromClient($id) {
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
-            ->select('c.id','c.user_id','c.prix','c.date_achat','c.etat_id')
+            ->select('c.id','c.user_id','c.prix','c.date_achat','c.etat_id','e.libelle')
             ->from('commandes', 'c')
             ->innerJoin('c', 'users', 'u', 'c.user_id=u.id')
             ->innerJoin('c', 'etats', 'e', 'e.id=c.etat_id')
             ->addOrderBy('c.date_achat ', 'ASC')
             ->addOrderBy('c.id', 'ASC')
-            ->where(''
-            );
+            ->where('c.user_id = ?')
+            ->setParameter(0,"$id")
+            ;
         return $queryBuilder->execute()->fetchAll();
 
     }
@@ -89,5 +90,26 @@ class CommandeModel
         ;
         return $queryBuilder->execute();
 
+    }
+
+    public function validCommande($id_commande){
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('commandes')
+            ->set('etat_id','2')
+            ->where('id= ?')
+            ->setParameter(0,$id_commande)
+        ;
+        return $queryBuilder->execute();
+    }
+
+    public function deleteCommande($id){
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->delete('commandes')
+            ->where('id = ?')
+            ->setParameter(0,$id)
+        ;
+        return $queryBuilder->execute();
     }
 }

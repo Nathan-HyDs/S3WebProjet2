@@ -101,7 +101,6 @@ class PanierModel
 
     public function deleteProduit($id_produit, $id_user) {
         $panier=$this->getPanierFromProduitAndUser($id_produit,$id_user);
-        print_r($panier);
         $queryBuilder = new QueryBuilder($this->db);
         $queryBuilder
             ->delete('paniers')
@@ -193,4 +192,25 @@ class PanierModel
             ->where('user_id='.$id_user.' and commande_id is NULL');
         return $queryBuilder->execute()->fetch();
     }
+
+    public function findPanierReferenceCommande($id_commande){
+        $queryBuilder=new QueryBuilder($this->db);
+        $queryBuilder
+            ->select('id')
+            ->from('paniers')
+            ->where('commande_id= ?')
+            ->setParameter(0,$id_commande)
+            ;
+    }
+
+    public function deletePanierByCommande($id_commande) {
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->delete('paniers')
+            ->where('commande_id= ?')
+            ->setParameter(0,$id_commande)
+        ;
+        return $queryBuilder->execute();
+    }
+
 }
