@@ -25,6 +25,9 @@ class PanierController implements ControllerProviderInterface
 
     public function acceuil(Application $app)
     {
+        if($app['session']->get('droit')!='DROITclient')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $id=$app['session']->get('user_id');
         $this->panierModel=new PanierModel($app);
         $this->produitModel=new ProduitModel($app);
@@ -52,6 +55,9 @@ class PanierController implements ControllerProviderInterface
     }
 
     public function insert(Application $app){
+        if($app['session']->get('droit')!='DROITclient')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $id_client=$app['session']->get('user_id');
 
         $donnees=[
@@ -108,6 +114,8 @@ class PanierController implements ControllerProviderInterface
     }
 
     public function delete(Application $app){
+        if($app['session']->get('droit')!='DROITclient')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
         $id_client=$app['session']->get('user_id');
 
         $donnees=[
@@ -149,6 +157,19 @@ class PanierController implements ControllerProviderInterface
     }
 
     public function newCommande(Application $app){
+        /*
+         * $conn->beginTransaction();
+         * $requestSQL=$conn->prepare('REQUETE INSERTION COMMAND')
+         * $requestSQL=execute([$user_id,$prix,1])
+         * $lastinsertid=$conn->LastInsertId();
+         *
+         * $requestSQL=$conn->prepare('UPDATE PANIERS');
+         * $requestSQL->execute([$lastinsertid,$user_id]);
+         * $conn->commit();
+         *
+         */
+        if($app['session']->get('droit')!='DROITclient')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
         $test=true;
 
         $id_client=$app['session']->get('user_id');

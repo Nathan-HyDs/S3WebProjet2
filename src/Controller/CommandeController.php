@@ -41,6 +41,9 @@ class CommandeController implements ControllerProviderInterface
     }
 
     public function validCommande(Application $app,$id){
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $this->commandeModel=new CommandeModel($app);
         $this->commandeModel->validCommande($id);
         return $app->redirect($app["url_generator"]->generate("commande.show"));
@@ -48,6 +51,9 @@ class CommandeController implements ControllerProviderInterface
 
 
     public function delete(Application $app,$id) {
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $this->commandeModel = new CommandeModel($app);
         $this->panierModel = new PanierModel($app);
 
@@ -57,7 +63,7 @@ class CommandeController implements ControllerProviderInterface
         return $app->redirect($app["url_generator"]->generate("commande.show"));
 
     }
-
+/*
 
     public function edit(Application $app, $id) {
         $this->commandeModel = new CommandeModel($app);
@@ -80,7 +86,7 @@ class CommandeController implements ControllerProviderInterface
             return $app->abort(404, 'error Pb id form edit');
 
     }
-
+*/
     public function connect(Application $app) {  //http://silex.sensiolabs.org/doc/providers.html#controller-providers
         $controllers = $app['controllers_factory'];
 

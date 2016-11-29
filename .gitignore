@@ -2,4 +2,4 @@
 app/config.php
 app/AppKernel.php
 composer*
-vendor/
+vendor

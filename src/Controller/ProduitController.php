@@ -30,12 +30,18 @@ class ProduitController implements ControllerProviderInterface
     }
 
     public function show(Application $app) {
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $this->produitModel = new ProduitModel($app);
         $produits = $this->produitModel->getAllProduits();
         return $app["twig"]->render('backOff/Produit/show.html.twig',['data'=>$produits]);
     }
 
     public function add(Application $app) {
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $this->typeProduitModel = new TypeProduitModel($app);
         $typeProduits = $this->typeProduitModel->getAllTypeProduits();
         return $app["twig"]->render('backOff/Produit/add.html.twig',['typeProduits'=>$typeProduits,'path'=>BASE_URL]);
@@ -43,6 +49,9 @@ class ProduitController implements ControllerProviderInterface
 
     public function validFormAdd(Application $app, Request $req) {
        // var_dump($app['request']->attributes);
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         if (isset($_POST['nom']) && isset($_POST['typeProduit_id']) and isset($_POST['nom']) and isset($_POST['photo'])) {
             $donnees = [
                 'nom' => htmlspecialchars($_POST['nom']),                    // echapper les entrées
@@ -74,6 +83,9 @@ class ProduitController implements ControllerProviderInterface
     }
 
     public function delete(Application $app, $id) {
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $this->typeProduitModel = new TypeProduitModel($app);
         $typeProduits = $this->typeProduitModel->getAllTypeProduits();
         $this->produitModel = new ProduitModel($app);
@@ -82,6 +94,9 @@ class ProduitController implements ControllerProviderInterface
     }
 
     public function validFormDelete(Application $app, Request $req) {
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $id=$app->escape($req->get('id'));
         if (is_numeric($id)) {
             $this->produitModel = new ProduitModel($app);
@@ -94,6 +109,9 @@ class ProduitController implements ControllerProviderInterface
 
 
     public function edit(Application $app, $id) {
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $this->typeProduitModel = new TypeProduitModel($app);
         $typeProduits = $this->typeProduitModel->getAllTypeProduits();
         $this->produitModel = new ProduitModel($app);
@@ -102,6 +120,9 @@ class ProduitController implements ControllerProviderInterface
     }
 
     public function validFormEdit(Application $app, Request $req) {
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         // var_dump($app['request']->attributes);
         if (isset($_POST['nom']) && isset($_POST['typeProduit_id']) and isset($_POST['nom']) and isset($_POST['photo']) and isset($_POST['id'])) {
             $donnees = [
