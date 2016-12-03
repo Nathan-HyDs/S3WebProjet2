@@ -1,0 +1,21 @@
+{% extends "layout.html.twig" %}
+{% block contenu %}
+    <div class="row">
+        {{ user.<parm> }}
+        <table>
+            <caption> Information du compte </caption>
+            <thead>
+            <tr><th>login</th><th>password</th><th>e-mail</th><th>nom</th><th>ville</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{users.login}}</td><td>{{users.password}}</td><td>{{users.email}}</td><td>{{users.nom}}</td><td>
+                        {{users.ville}}</td><td>
+                    </td>
+                </tr>
+            <tbody>
+        </table>
+    </div>
+{% endblock %}
+

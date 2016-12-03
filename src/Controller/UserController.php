@@ -52,9 +52,20 @@ class UserController implements ControllerProviderInterface {
 		return $app->redirect($app["url_generator"]->generate("accueil"));
 	}
 
+	public function moreInfoClient(Application $app)
+    {
+        $this->UserModel = new UserModel($app);
+        $id = $app['session']->get('user_id');
+        $users = $this->UserModel->getUserId($id);
+        return $app["twig"]->render('frontOff/infoUser.html.twig', ['data' => $users]);
+    }
+
+
 	public function connect(Application $app) {
 		$controllers = $app['controllers_factory'];
+
 		$controllers->match('/', 'App\Controller\UserController::index')->bind('user.index');
+        $controllers->match('/informations', 'App\Controller\UserController::moreInfoClient')->bind('user.moreInfoClient');
 		$controllers->get('/login', 'App\Controller\UserController::connexionUser')->bind('user.login');
 		$controllers->post('/login', 'App\Controller\UserController::validFormConnexionUser')->bind('user.validFormlogin');
 		$controllers->get('/logout', 'App\Controller\UserController::deconnexionSession')->bind('user.logout');
