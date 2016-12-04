@@ -1,21 +1,71 @@
 {% extends "layout.html.twig" %}
 {% block contenu %}
+
+    <div id="myModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+        <h2 id="modalTitle">Modification du mot de passe</h2>
+        <form>
+            <label> Mot de passe :
+                <input type="password" name="motdepasse">
+            </label>
+            <label> Verifiaction :
+                <input type="password" name="motdepasse2">
+            </label>
+
+            <input type="submit" value="Valider" class="button">
+        </form>
+
+
+        <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+    </div>
+
+
     <div class="row">
-        {{ user.<parm> }}
-        <table>
-            <caption> Information du compte </caption>
-            <thead>
-            <tr><th>login</th><th>password</th><th>e-mail</th><th>nom</th><th>ville</th>
-            </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{users.login}}</td><td>{{users.password}}</td><td>{{users.email}}</td><td>{{users.nom}}</td><td>
-                        {{users.ville}}</td><td>
-                    </td>
-                </tr>
-            <tbody>
-        </table>
+        <div class="small-12 large-12 columns">
+            <fieldset>
+                <form>
+                    <h1> Information du compte : </h1>
+
+                    <label class="small-2 large-4">
+                        Identifiant :
+                        <input type="text" size="18" disabled="disabled" value="{{ data.login }}">
+                    </label>
+
+                    <fieldset>
+                        <label class="small-4 large-8">
+                            <div class="large-4 small-2 columns">
+                                Mot de passe :
+                                <input type="password" size="18" disabled="disabled" value="{{ data.password }}">
+                            </div>
+                            <div class="large-4 small-2 ">
+                                <a href="#" class='tiny button' data-reveal-id="myModal">Modifier</a>
+                            </div>
+                        </label>
+                    </fieldset>
+
+                    <label class="small-2 large-4">
+                        Nom :
+                        <input type="text" size="18" name='nom' value="{{ data.nom }}">
+                    </label>
+
+                    <label class="small-2 large-4">
+                        Ville :
+                        <input type="text" size="18" name='ville' value="{{ data.ville }}">
+                    </label>
+
+                    <label class="small-2 large-4">
+                        Code postale:
+                        <input type="text" size="18" name='code_postal' value="{{ data.code_postal }}">
+                    </label>
+
+                    <label class="small-2 large-4">
+                        Adresse :
+                        <input type="text" size="18" name='adresse' value="{{ data.adresse }}">
+                    </label>
+
+                    <input type="submit" value="Modifier" class="button">
+                </form>
+        </fieldset>
+        </div>
     </div>
 {% endblock %}
 

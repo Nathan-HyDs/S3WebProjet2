@@ -54,10 +54,10 @@ class UserController implements ControllerProviderInterface {
 
 	public function moreInfoClient(Application $app)
     {
-        $this->UserModel = new UserModel($app);
+        $this->userModel = new UserModel($app);
         $id = $app['session']->get('user_id');
-        $users = $this->UserModel->getUserId($id);
-        return $app["twig"]->render('frontOff/infoUser.html.twig', ['data' => $users]);
+        $users = $this->userModel->getUser($id);
+        return $app["twig"]->render('frontOff/InfoUser.html.twig', ['data' => $users]);
     }
 
 
