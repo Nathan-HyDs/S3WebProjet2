@@ -21,6 +21,21 @@ class UserModel {
 			return false;
 	}
 
+    public function updateDonneesUsers($donnees ) {
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('users')
+            ->set('nom', '?')
+            ->set('ville','?')
+            ->set('code_postal','?')
+            ->set('adresse','?')
+            ->setParameter(0, $donnees['nom'])
+            ->setParameter(1, $donnees['ville'])
+            ->setParameter(2, $donnees['code_postal'])
+            ->setParameter(3, $donnees['adresse']);
+        return $queryBuilder->execute();
+    }
+
 	public function getUser($user_id) {
 		$queryBuilder = new QueryBuilder($this->db);
 		$queryBuilder
