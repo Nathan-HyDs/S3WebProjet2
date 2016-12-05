@@ -44,7 +44,7 @@ class UserModel {
             ->update('users')
             ->set('password', '?')
             ->where('id = ?')
-            ->setParameter(0, $donnees['password'])
+            ->setParameter(0, $donnees['motdepasse'])
             ->setParameter(1, $donnees['id']);
         return $queryBuilder->execute();
     }

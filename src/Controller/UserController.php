@@ -70,29 +70,27 @@ class UserController implements ControllerProviderInterface {
             $donnees=[
                 'motdepasse'=>htmlspecialchars($_POST['motdepasse']),
                 'motdepasse2'=>htmlspecialchars($_POST['motdepasse2']),
-                'id'=>$_POST['id']
+                'id'=>$app['session']->get('user_id')
             ];
             if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['motdepasse']))) $erreurs['motdepasse']='motdepasse composé de 2 lettres minimum';
             if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['motdepasse2']))) $erreurs['motdepasse2']='motdepasse2 composé de 2 lettres minimum';
 
             $id = $app['session']->get('user_id');
 
-
-            if($donnees['motdepasse']==$donnees['motdepasse2']){
-                if(!empty($erreurs)){
-                    $this->userModel = new UserModel($app);
-                    $users = $this->userModel->getUser($id);
-                    $error="Probleme modification mot de passe";
-                    return $app["twig"]->render('frontOff/InfoUser.html.twig',['data' => $users, 'erreurMdp'=>$error]);
-                }
-                else{
+            if (strcmp($donnees['motdepasse'],$donnees['motdepasse2'])==0) {
+                if (empty($erreurs)){
                     $this->userModel = new UserModel($app);
                     $this->userModel->updatePasswordUsers($donnees);
                     $users = $this->userModel->getUser($id);
-                    $success="Modification réussite";
-                    return $app["twig"]->render('frontOff/InfoUser.html.twig',['data' => $users, 'success'=>$success]);
+                    $success["motdepasse"] = "Modification mot de passe réussite";
+                    return $app["twig"]->render('frontOff/InfoUser.html.twig', ['data' => $users, 'success' => $success]);
                 }
             }
+            $this->userModel = new UserModel($app);
+            $users = $this->userModel->getUser($id);
+            $error["motdepasse"]="Probleme modification mot de passe";
+            return $app["twig"]->render('frontOff/InfoUser.html.twig',['data' => $users, 'erreurs'=>$error]);
+
 
         }
 
@@ -146,7 +144,7 @@ class UserController implements ControllerProviderInterface {
                 $this->userModel = new UserModel($app);
                 $this->userModel->updateDonneesUsers($donnees);
                 $users = $this->userModel->getUser($id);
-                $success="Modification réussite";
+                $success['motdepasse']="Modification réussite";
                 return $app["twig"]->render('frontOff/InfoUser.html.twig',['data' => $users, 'success'=>$success]);
             }
 

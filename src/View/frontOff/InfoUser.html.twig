@@ -1,16 +1,16 @@
 {% extends "layout.html.twig" %}
 {% block contenu %}
 
-    {% if sucess is defined %}
-        <div data-alert class="alert-box success round">
-            {{success}}
+    {% if success.motdepasse is defined %}
+        <div data-alert class="alert-box success ound">
+            {{success.motdepasse}}
             <a href="#" class="close">&times;</a>
         </div>
     {% endif %}
 
-    {% if erreurs is defined %}
-        <div data-alert class="alert-box success round">
-            {{erreurs}}
+    {% if erreurs.motdepasse is defined %}
+        <div data-alert class="alert-box alert ound">
+            {{erreurs.motdepasse}}
             <a href="#" class="close">&times;</a>
         </div>
     {% endif %}
@@ -19,7 +19,7 @@
     <div id="myModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
         <h2 id="modalTitle">Modification du mot de passe</h2>
         <form method="post" action="{{ path('user.validFormEditPassword') }}">
-            <label> Mot de passe :
+            <label> Entrez votre nouveau mot de passe :
                 <input type="password" name="motdepasse">
             </label>
             <label> Verification :
@@ -74,7 +74,7 @@
                     </label>
 
                     <label class="small-2 large-4">
-                        Code postal:
+                        Code postal :
                         <input type="text" size="18" name='code_postal' value="{{ data.code_postal }}">
                         {% if error.code_postal is defined %}
                             <small class="error">{{error.code_postal}}</small>
