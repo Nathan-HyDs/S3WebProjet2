@@ -29,14 +29,28 @@ class UserModel {
             ->set('ville','?')
             ->set('code_postal','?')
             ->set('adresse','?')
+            ->where('id = ?')
             ->setParameter(0, $donnees['nom'])
             ->setParameter(1, $donnees['ville'])
             ->setParameter(2, $donnees['code_postal'])
-            ->setParameter(3, $donnees['adresse']);
+            ->setParameter(3, $donnees['adresse'])
+            ->setParameter(4, $donnees['id']);
         return $queryBuilder->execute();
     }
 
-	public function getUser($user_id) {
+    public function updatePasswordUsers($donnees ) {
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('users')
+            ->set('password', '?')
+            ->where('id = ?')
+            ->setParameter(0, $donnees['password'])
+            ->setParameter(1, $donnees['id']);
+        return $queryBuilder->execute();
+    }
+
+
+    public function getUser($user_id) {
 		$queryBuilder = new QueryBuilder($this->db);
 		$queryBuilder
 			->select('*')

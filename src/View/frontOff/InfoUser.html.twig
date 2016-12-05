@@ -1,9 +1,24 @@
 {% extends "layout.html.twig" %}
 {% block contenu %}
 
+    {% if sucess is defined %}
+        <div data-alert class="alert-box success round">
+            {{success}}
+            <a href="#" class="close">&times;</a>
+        </div>
+    {% endif %}
+
+    {% if erreurs is defined %}
+        <div data-alert class="alert-box success round">
+            {{erreurs}}
+            <a href="#" class="close">&times;</a>
+        </div>
+    {% endif %}
+
+
     <div id="myModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
         <h2 id="modalTitle">Modification du mot de passe</h2>
-        <form>
+        <form method="post" action="{{ path('user.validFormEditPassword') }}">
             <label> Mot de passe :
                 <input type="password" name="motdepasse">
             </label>
@@ -22,7 +37,7 @@
     <div class="row">
         <div class="small-12 large-12 columns">
             <fieldset>
-                <form>
+                <form method="post" action="{{ path('user.validFormEdit') }}">
                     <h1> Information du compte : </h1>
 
                     <label class="small-2 large-4">
@@ -45,22 +60,36 @@
                     <label class="small-2 large-4">
                         Nom :
                         <input type="text" size="18" name='nom' value="{{ data.nom }}">
+                        {% if error.nom is defined %}
+                            <small class="error">{{error.nom}}</small>
+                        {% endif %}
                     </label>
 
                     <label class="small-2 large-4">
                         Ville :
                         <input type="text" size="18" name='ville' value="{{ data.ville }}">
+                        {% if error.ville is defined %}
+                            <small class="error">{{error.ville}}</small>
+                        {% endif %}
                     </label>
 
                     <label class="small-2 large-4">
                         Code postal:
                         <input type="text" size="18" name='code_postal' value="{{ data.code_postal }}">
+                        {% if error.code_postal is defined %}
+                            <small class="error">{{error.code_postal}}</small>
+                        {% endif %}
                     </label>
 
                     <label class="small-2 large-4">
                         Adresse :
                         <input type="text" size="18" name='adresse' value="{{ data.adresse }}">
+                        {% if error.adresse is defined %}
+                            <small class="error">{{error.adresse}}</small>
+                        {% endif %}
                     </label>
+
+                    <input type="hidden" value='{{ data.id }}' name='id'>
 
                     <input type="submit" value="Modifier" class="button">
                 </form>

@@ -62,17 +62,44 @@ class UserController implements ControllerProviderInterface {
         return $app["twig"]->render('frontOff/InfoUser.html.twig', ['data' => $users]);
     }
 
-    public function edit(Application $app , $user_id) {
-        if($app['session']->get('droit')!='DROITadmin')
+    public function  validFormEditPassword(Application $app){
+        if($app['session']->get('droit')!='DROITclient')
             return $app->redirect($app["url_generator"]->generate("user.login"));
 
-        $this->userModel = new UserModel($app);
-        $users = $this->userModel->getUser($user_id);
-        return $app["twig"]->render('frontOff/InfoUser.html.twig', ['data' => $users]);
+        if(isset($_POST['motdepasse']) && isset($_POST['motdepasse2'])){
+            $donnees=[
+                'motdepasse'=>htmlspecialchars($_POST['motdepasse']),
+                'motdepasse2'=>htmlspecialchars($_POST['motdepasse2']),
+                'id'=>$_POST['id']
+            ];
+            if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['motdepasse']))) $erreurs['motdepasse']='motdepasse composé de 2 lettres minimum';
+            if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['motdepasse2']))) $erreurs['motdepasse2']='motdepasse2 composé de 2 lettres minimum';
+
+            $id = $app['session']->get('user_id');
+
+
+            if($donnees['motdepasse']==$donnees['motdepasse2']){
+                if(!empty($erreurs)){
+                    $this->userModel = new UserModel($app);
+                    $users = $this->userModel->getUser($id);
+                    $error="Probleme modification mot de passe";
+                    return $app["twig"]->render('frontOff/InfoUser.html.twig',['data' => $users, 'erreurMdp'=>$error]);
+                }
+                else{
+                    $this->userModel = new UserModel($app);
+                    $this->userModel->updatePasswordUsers($donnees);
+                    $users = $this->userModel->getUser($id);
+                    $success="Modification réussite";
+                    return $app["twig"]->render('frontOff/InfoUser.html.twig',['data' => $users, 'success'=>$success]);
+                }
+            }
+
+        }
+
     }
 
     public function validFormEdit(Application $app, Request $req) {
-        if($app['session']->get('droit')!='DROITadmin')
+        if($app['session']->get('droit')!='DROITclient')
             return $app->redirect($app["url_generator"]->generate("user.login"));
 
         if (isset($_POST['nom']) and isset($_POST['ville']) and isset($_POST['code_postal']) and isset($_POST['adresse'])) {
@@ -85,7 +112,8 @@ class UserController implements ControllerProviderInterface {
             if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['nom']))) $erreurs['nom']='nom composé de 2 lettres minimum';
             if(! preg_match("/^[A-Za-z ]{3,}/",$donnees['ville']))$erreurs['ville']='nom de ville composé de 3 lettres minimum';
             if(! is_numeric($donnees['code_postal']))$erreurs['code_postal']='saisir une valeur numérique';
-            if(! preg_match("/^[A-Za-z ]{5,}/",$donnees['adresse']))$erreurs['adresse']='adresse composé de 5 lettres minimum';
+            if(! preg_match("/^[A-Za-z0-9 ]{5,}/",$donnees['adresse']))$erreurs['adresse']='adresse composé de 5 lettres minimum';
+            $donnees['id']=$_POST['id'];
             $contraintes = new Assert\Collection(
                 [
                     'id' => [new Assert\NotBlank(),new Assert\Type('digit')],
@@ -107,17 +135,19 @@ class UserController implements ControllerProviderInterface {
                     ]
                 ]);
             $errors = $app['validator']->validate($donnees,$contraintes);
-            if (count($errors) > 0) {
+            $id = $app['session']->get('user_id');
+            if (!empty($erreurs)) {
                 $this->userModel = new UserModel($app);
-                $id = $app['session']->get('user_id');
                 $users = $this->userModel->getUser($id);
-                return $app["twig"]->render('frontOff/InfoUser.html.twig',['data' => $users]);
+                return $app["twig"]->render('frontOff/InfoUser.html.twig',['data' => $users, 'error'=>$erreurs]);
             }
             else
             {
-                $this->UserModel = new UserModel($app);
-                $this->UserModel->updateDonneesUsers($donnees);
-                return $app->redirect($app["url_generator"]->generate("produit.index"));
+                $this->userModel = new UserModel($app);
+                $this->userModel->updateDonneesUsers($donnees);
+                $users = $this->userModel->getUser($id);
+                $success="Modification réussite";
+                return $app["twig"]->render('frontOff/InfoUser.html.twig',['data' => $users, 'success'=>$success]);
             }
 
         }
@@ -131,7 +161,10 @@ class UserController implements ControllerProviderInterface {
 
 		$controllers->match('/', 'App\Controller\UserController::index')->bind('user.index');
         $controllers->match('/informations', 'App\Controller\UserController::moreInfoClient')->bind('user.moreInfoClient');
-		$controllers->get('/login', 'App\Controller\UserController::connexionUser')->bind('user.login');
+        $controllers->match('/validFormEdit', 'App\Controller\UserController::validFormEdit')->bind('user.validFormEdit');
+        $controllers->match('/validFormEditPassword', 'App\Controller\UserController::validFormEditPassword')->bind('user.validFormEditPassword');
+
+        $controllers->get('/login', 'App\Controller\UserController::connexionUser')->bind('user.login');
 		$controllers->post('/login', 'App\Controller\UserController::validFormConnexionUser')->bind('user.validFormlogin');
 		$controllers->get('/logout', 'App\Controller\UserController::deconnexionSession')->bind('user.logout');
 		return $controllers;
