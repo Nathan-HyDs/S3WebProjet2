@@ -28,14 +28,18 @@ class CommandeController implements ControllerProviderInterface
     public function show(Application $app) {
         $id=$app['session']->get('user_id');
         $this->commandeModel = new CommandeModel($app);
+        $this->panierModel = new PanierModel($app);
+
 
         if ($app['session']->get('droit') == 'DROITclient'){
             $commandes = $this->commandeModel->getAllCommandesFromClient($id);
             return $app["twig"]->render("frontOff/showCommandeFrontOffice.html.twig",['data'=>$commandes]);
         }
         if ($app['session']->get('droit') == 'DROITadmin'){
+            $tabPaniers=[];
             $commandes = $this->commandeModel->getAllCommandes();
-            return $app["twig"]->render("backOff/showCommandeFrontOffice.html.twig",['data'=>$commandes]);
+            $tabPaniers=$this->panierModel->getAllPaniers();
+            return $app["twig"]->render("backOff/showCommandeFrontOffice.html.twig",['data'=>$commandes , 'paniers'=>$tabPaniers]);
         }
 
     }

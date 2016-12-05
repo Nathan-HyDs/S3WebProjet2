@@ -31,6 +31,18 @@ class PanierModel
         return $queryBuilder->execute()->fetchAll();
     }
 
+    public function getAllPaniers(){
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            -> select('pa.commande_id','pa.id','p.nom','p.photo','pa.quantite','pa.prix','pa.produit_id')
+            ->from('paniers','pa')
+            ->innerJoin('pa','users','u','pa.user_id=u.id')
+            ->innerJoin('pa','produits','p','pa.produit_id=p.id')
+            ->where('commande_id is not NULL')
+            ->addOrderBy('p.nom','ASC');
+        return $queryBuilder->execute()->fetchAll();
+    }
+
 
     public function insertPanier($donnees) {
         $queryBuilder = new QueryBuilder($this->db);
@@ -72,6 +84,18 @@ class PanierModel
             ->from('paniers')
             ->where('produit_id= :id and user_id= :id_user and commande_id is NULL')
             ->setParameter('id', $id_produit)
+            ->setParameter('id_user', $id_user);
+
+        return $queryBuilder->execute()->fetch();
+    }
+
+    function getPanierFromCommande($id_commande,$id_user){
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->select('*')
+            ->from('paniers')
+            ->where('commande_id= :id and user_id= :id_user')
+            ->setParameter('id', $id_commande)
             ->setParameter('id_user', $id_user);
 
         return $queryBuilder->execute()->fetch();

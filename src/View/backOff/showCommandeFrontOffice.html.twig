@@ -1,5 +1,48 @@
 {% extends "layout.html.twig" %}
 {% block contenu %}
+
+
+    {% for commande in data if data is not empty %}
+
+        <div id="myModal{{ commande.id }}" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+            <h2 id="modalTitle">Détails de la commande numéros : {{ commande.id }}</h2>
+            <ul>
+                <li>
+                    Utilisateur : {{ commande.login }}
+                </li>
+                <li>
+                    Prix : {{ commande.prix }} €
+                </li>
+                <li>
+                    Date d'achat : {{ commande.date_achat }}
+                </li>
+                <li>
+                    Etat: {{ commande.libelle }} €
+                </li>
+            </ul>
+            <table>
+                <caption>le panier +liens</caption>
+                <thead>
+                <tr>
+                    <th>nom</th><th>photo</th><th>quantite</th><th>prix</th><th>
+                </thead>
+                <tbody>
+                {% for panier in paniers if paniers is not empty %}
+                    {% if panier.commande_id==commande.id %}
+                    <tr>
+                        <td>{{ panier.nom }}</td>
+                        <td><img style="width:72px;height:100px" src="{{asset('images/')}}{{panier.photo}}" alt="image de {{panier.nom}}" ></td>
+                        <td>{{ panier.quantite }}</td><td>{{ panier.prix }}€</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+
+
+        </div>
+    {% endfor %}
+
     <div class="row">
         <div class="small-8 large-8 columns">
             <table>
@@ -10,7 +53,10 @@
                 <tbody>
                 {% for commande in data if data is not empty %}
                     <tr>
-                        <td>{{ commande.login }}</td><td>{{commande.prix}}</td><td>{{commande.date_achat}}</td><td>{{commande.libelle}}</td>
+                        <td>
+                            <a href="#" data-reveal-id="myModal{{ commande.id }}" > <span class="badge">+</span></a>
+                            {{ commande.login }}
+                        </td><td>{{commande.prix}}</td><td>{{commande.date_achat}}</td><td>{{commande.libelle}}</td>
                         <td><a href="{{ path('commande.validCommande', {id: commande.id}) }}">Validez</a>
                         <a href="{{ path('commande.delete', {id: commande.id}) }}">Supprimez</a></td>
                     </tr>
