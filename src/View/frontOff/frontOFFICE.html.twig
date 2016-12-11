@@ -6,7 +6,7 @@
 			<a href="#" class="close">&times;</a>
 		</div>
 	{% endif %}
-	<h1> Projet 2 web : site de vente Espace client </h1>
+	<h1> Mon espace client </h1>
 
 
 
@@ -14,7 +14,7 @@
 		<h2 id="modalTitle">Etes vous sur de vouloir commander ?.</h2>
 		<p class="lead">Prix totale :
 		{% if donnees.pricePanier is defined %}
-			{{ donnees.pricePanier }}
+			{{ donnees.pricePanier }} €
 		{% endif %}</p>
 		<a href="{{ path('panier.newCommande')}}" class="button"> Je suis sur </a>
 		<a class="close-reveal-modal" aria-label="Close">&#215;</a>
@@ -22,8 +22,12 @@
 
 	<div class="row">
 		<div class="small-8 large-8 columns">
+            <a class="tiny button blue" href="{{ path("panier.index") }}">All</a>
+            {% for typeproduit in typeproduits if typeproduits is not empty %}
+                <a class="tiny button success" href="{{ path('panier.showSpecificTypeProduit', {idtype: typeproduit.id }) }}">{{ typeproduit.libelle }}</a>
+            {% endfor %}
 			<table>
-				<caption>les produits + liens</caption>
+				<caption>Produits</caption>
 				<thead>
 				<tr><th>nom</th><th>id</th><th>type</th><th>prix</th><th>nom photo</th><th>photo</th><th>stock</th><th>commande</th>
 				</tr>
@@ -58,7 +62,7 @@
 		</div>
 		<div class="small-4 large-4 columns" style="left: 100px">
 			<table>
-				<caption>le panier +liens</caption>
+				<caption>Panier</caption>
 				<thead>
 				<tr>
 					<th>nom</th><th>photo</th><th>quantite</th><th>prix</th><th>

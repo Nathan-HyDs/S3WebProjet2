@@ -22,4 +22,6 @@ class TypeProduitModel {
             ->addOrderBy('p.libelle', 'ASC');
         return $queryBuilder->execute()->fetchAll();
     }
-}
+
+
+    }

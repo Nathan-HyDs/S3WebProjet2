@@ -11,6 +11,7 @@ namespace App\Controller;
 use App\Model\ProduitModel;
 use App\Model\PanierModel;
 use App\Model\CommandeModel;
+use App\Model\TypeProduitModel;
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;   // modif version 2.0
 
@@ -21,6 +22,7 @@ class PanierController implements ControllerProviderInterface
     private $produitModel;
     private $panierModel;
     private $commandeModel;
+    private $typeProduitModel;
 
 
     public function acceuil(Application $app)
@@ -34,6 +36,8 @@ class PanierController implements ControllerProviderInterface
         $data=$this->produitModel->getAllProduits();
         $panier=$this->panierModel->getAllPanier($id);
         $price=$this->panierModel->getPrixTotaleOfPanier($id);
+        $this->typeProduitModel = new TypeProduitModel($app);
+        $typeProduits = $this->typeProduitModel->getAllTypeProduits();
 
         foreach ($data as $key=>$produit){
             $qt=$this->panierModel->getPanierFromProduitAndUser($produit['id'], $id);
@@ -45,12 +49,45 @@ class PanierController implements ControllerProviderInterface
             $donnees=$app["session"]->get("donnees");
             $donnees["pricePanier"]=$price["prixTot"];
             $app["session"]->set('donnees',null);
-            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier , 'donnees'=>$donnees]);
+            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier , 'donnees'=>$donnees, 'typeproduits'=>$typeProduits]);
 
         }
         else{
             $donnees["pricePanier"]=$price["prixTot"];
-            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier,'donnees'=>$donnees]);
+            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier,'donnees'=>$donnees, 'typeproduits'=>$typeProduits]);
+        }
+    }
+
+    public function showSpecificTypeProduit(Application $app,$idtype)
+    {
+        if($app['session']->get('droit')!='DROITclient')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
+        $id=$app['session']->get('user_id');
+        $this->panierModel=new PanierModel($app);
+        $this->produitModel=new ProduitModel($app);
+        $data=$this->produitModel->getProduitFromType($idtype);
+        $panier=$this->panierModel->getAllPanier($id);
+        $price=$this->panierModel->getPrixTotaleOfPanier($id);
+        $this->typeProduitModel = new TypeProduitModel($app);
+        $typeProduits = $this->typeProduitModel->getAllTypeProduits();
+
+        foreach ($data as $key=>$produit){
+            $qt=$this->panierModel->getPanierFromProduitAndUser($produit['id'], $id);
+            if(!empty($qt))
+                $data[$key]['stock']=$data[$key]['stock']-$qt['quantite'];
+        }
+
+        if(!empty($app["session"]->get("donnees"))){
+            $donnees=$app["session"]->get("donnees");
+            $donnees["pricePanier"]=$price["prixTot"];
+            $app["session"]->set('donnees',null);
+            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier , 'donnees'=>$donnees, 'typeproduits'=>$typeProduits]);
+
+        }
+        else{
+            $donnees["pricePanier"]=$price["prixTot"];
+            return $app["twig"]->render('frontOff\frontOFFICE.html.twig',['data'=>$data , 'panier'=>$panier,'donnees'=>$donnees, 'typeproduits'=>$typeProduits]);
         }
     }
 
@@ -221,6 +258,9 @@ class PanierController implements ControllerProviderInterface
     {
         $index = $app['controllers_factory'];
         $index->match("/acceuil", 'App\Controller\PanierController::acceuil')->bind('panier.index');
+
+        $index->get("/showSpecificTypeProduit/{idtype}", 'App\Controller\PanierController::showSpecificTypeProduit')->bind('panier.showSpecificTypeProduit')->assert('idtype', '\d+');;
+
 
         $index->match("/newCommande", 'App\Controller\PanierController::newCommande')->bind('panier.newCommande');
         $index->post("/insert", 'App\Controller\PanierController::insert')->bind('panier.insert');

@@ -144,4 +144,18 @@ class ProduitModel {
         ;
         return $queryBuilder->execute();
     }
+
+    public function getProduitFromType($id_type)
+    {
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->select('p.id','p.nom','p.prix','p.photo','t.libelle','p.stock')
+            ->from('produits', 'p')
+            ->innerJoin('p', 'typeProduits', 't', 'p.typeProduit_id=t.id')
+            ->where('t.id='.$id_type )
+            ->addOrderBy('t.id ', 'ASC')
+            ->addOrderBy('p.nom', 'ASC');
+
+        return $queryBuilder->execute()->fetchAll();
+    }
 }
