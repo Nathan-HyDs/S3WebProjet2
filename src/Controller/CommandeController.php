@@ -44,6 +44,7 @@ class CommandeController implements ControllerProviderInterface
 
     }
 
+
     public function validCommande(Application $app,$id){
         if($app['session']->get('droit')!='DROITadmin')
             return $app->redirect($app["url_generator"]->generate("user.login"));

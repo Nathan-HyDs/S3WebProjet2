@@ -54,11 +54,12 @@
                 {% for commande in data if data is not empty %}
                     <tr>
                         <td>
-                            <a href="#" data-reveal-id="myModal{{ commande.id }}" > <span class="badge">+</span></a>
                             {{ commande.login }}
                         </td><td>{{commande.prix}}</td><td>{{commande.date_achat}}</td><td>{{commande.libelle}}</td>
                         <td><a href="{{ path('commande.validCommande', {id: commande.id}) }}">Validez</a>
-                        <a href="{{ path('commande.delete', {id: commande.id}) }}">Supprimez</a></td>
+                        <a href="{{ path('commande.delete', {id: commande.id}) }}">Supprimez</a>
+                            <a href="#" data-reveal-id="myModal{{ commande.id }}" >Détail</a>
+                        </td>
                     </tr>
                 {% endfor %}
                 <tbody>

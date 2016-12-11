@@ -56,6 +56,9 @@ class UserController implements ControllerProviderInterface {
 
 	public function moreInfoClient(Application $app)
     {
+        if($app['session']->get('droit')!='DROITclient')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
         $this->userModel = new UserModel($app);
         $id = $app['session']->get('user_id');
         $users = $this->userModel->getUser($id);
@@ -154,13 +157,46 @@ class UserController implements ControllerProviderInterface {
 
     }
 
-	public function connect(Application $app) {
+    public function showAllUsers(Application $app){
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
+        $this->userModel = new UserModel($app);
+        $users = $this->userModel->getUsers();
+        return $app["twig"]->render('backOff/infoUsersAdmin.html.twig', ['users' => $users]);
+
+    }
+
+    public function deleteUser(Application $app, $id){
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
+        $this->userModel = new UserModel($app);
+        $this->userModel->suppUser($id);
+        return $app->redirect($app["url_generator"]->generate("user.showAllUsers"));
+    }
+
+    public function upgradeUserIntoAdmin(Application $app, $id){
+        if($app['session']->get('droit')!='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("user.login"));
+
+        $this->userModel = new UserModel($app);
+        $this->userModel->upgradeAdmin($id);
+        return $app->redirect($app["url_generator"]->generate("user.showAllUsers"));
+    }
+
+    public function connect(Application $app) {
 		$controllers = $app['controllers_factory'];
 
 		$controllers->match('/', 'App\Controller\UserController::index')->bind('user.index');
         $controllers->match('/informations', 'App\Controller\UserController::moreInfoClient')->bind('user.moreInfoClient');
+        $controllers->match('/showAllUsers', 'App\Controller\UserController::showAllUsers')->bind('user.showAllUsers');
         $controllers->match('/validFormEdit', 'App\Controller\UserController::validFormEdit')->bind('user.validFormEdit');
         $controllers->match('/validFormEditPassword', 'App\Controller\UserController::validFormEditPassword')->bind('user.validFormEditPassword');
+
+        $controllers->get('/deleteUser/{id}', 'App\Controller\UserController::deleteUser')->bind('user.deleteUser')->assert('id', '\d+');
+        $controllers->get('/upgradeUserIntoAdmin/{id}', 'App\Controller\UserController::upgradeUserIntoAdmin')->bind('user.upgradeUserIntoAdmin')->assert('id', '\d+');
+
 
         $controllers->get('/login', 'App\Controller\UserController::connexionUser')->bind('user.login');
 		$controllers->post('/login', 'App\Controller\UserController::validFormConnexionUser')->bind('user.validFormlogin');

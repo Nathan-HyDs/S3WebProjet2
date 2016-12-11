@@ -1,0 +1,43 @@
+{% extends "layout.html.twig" %}
+{% block contenu %}
+    <div class="row">
+        <div class="small-8 large-8 columns">
+            <table>
+                <caption>Recapitulatifs des produits (avec twig)</caption>
+                <thead>
+                    <tr><th>login</th><th>nom</th><th>code postal</th><th>ville</th><th>adresse</th><th>droit</th><th>commandes</th></tr>
+                </thead>
+                <tbody>
+                {% for user in users if users is not empty %}
+                    <tr>
+                        <td>
+                            {{ user.login }}
+                        </td>
+                        <td>
+                            {{ user.nom }}
+                        </td>
+                        <td>
+                            {{ user.code_postal }}
+                        </td>
+                        <td>
+                            {{ user.ville }}
+                        </td>
+                        <td>
+                            {{ user.adresse }}
+                        </td>
+                        <td>
+                            {{ user.droit}}
+                        </td>
+                        <td>
+                            <a href="{{ path('user.deleteUser', {id: user.id}) }}">Supprimez</a>
+                            {% if user.droit == "DROITclient" %}
+                                <a href="{{ path('user.upgradeUserIntoAdmin', {id: user.id}) }}">Passer_Admin</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

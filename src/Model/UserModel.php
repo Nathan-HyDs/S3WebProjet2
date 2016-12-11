@@ -60,4 +60,34 @@ class UserModel {
 		return $queryBuilder->execute()->fetch();
 
 	}
+
+	public function getUsers(){
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->select('*')
+            ->from('users');
+        return $queryBuilder->execute()->fetchAll();
+    }
+
+    public function suppUser($user_id){
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->delete('users')
+            ->where('id = ?')
+            ->setParameter(0,$user_id);
+        return $queryBuilder->execute();
+    }
+
+    public function upgradeAdmin($user_id){
+
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->update('users')
+            ->set('droit', '\'DROITadmin\'')
+            ->where('id = ?')
+            ->setParameter(0,$user_id);
+        return $queryBuilder->execute();
+    }
+
+
 }
