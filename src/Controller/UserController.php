@@ -185,6 +185,19 @@ class UserController implements ControllerProviderInterface {
         return $app->redirect($app["url_generator"]->generate("user.showAllUsers"));
     }
 
+    public function addUser(Application $app){
+        /*
+         * Traitement des données
+         * Add dans le sql
+         * le connecté : utilise
+      		$app['session']->set('droit', $data['droit']);  //dans twig {{ app.session.get('droit') }}
+            $app['session']->set('login', $data['login']);
+			$app['session']->set('logged', 1);
+			$app['session']->set('user_id', $data['id']);
+         */
+        return $app->redirect($app["url_generator"]->generate("accueil"));
+    }
+
     public function connect(Application $app) {
 		$controllers = $app['controllers_factory'];
 
@@ -200,7 +213,9 @@ class UserController implements ControllerProviderInterface {
 
         $controllers->get('/login', 'App\Controller\UserController::connexionUser')->bind('user.login');
 		$controllers->post('/login', 'App\Controller\UserController::validFormConnexionUser')->bind('user.validFormlogin');
-		$controllers->get('/logout', 'App\Controller\UserController::deconnexionSession')->bind('user.logout');
+        $controllers->post('/addUser', 'App\Controller\UserController::addUser')->bind('user.addUser');
+
+        $controllers->get('/logout', 'App\Controller\UserController::deconnexionSession')->bind('user.logout');
 		return $controllers;
 	}
 }
