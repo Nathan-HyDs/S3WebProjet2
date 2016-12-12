@@ -187,6 +187,7 @@ class UserController implements ControllerProviderInterface {
 
     public function addUser(Application $app){
         /*
+         *
          * Traitement des données
          * Add dans le sql
          * le connecté : utilise

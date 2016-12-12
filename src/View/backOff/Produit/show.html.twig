@@ -6,7 +6,7 @@
 		{% endif %}
 
 		<table>
-			<caption>Recapitulatifs des produits (avec twig)</caption>
+			<caption>Recapitulatifs des produits </caption>
 			<thead>
 			<tr><th>nom</th><th>id</th><th>type</th><th>prix</th><th>nom photo</th><th>photo</th>
 				{% if   app.session.get('droit') is defined and  app.session.get('droit') == 'DROITadmin' %}

@@ -3,7 +3,7 @@
 <form method="post" action="{{ path('produit.validFormAdd') }}">
     <div class="row">
         <fieldset>
-            <legend>Creer un produit (twig)</legend>
+            <legend>Creer un produit </legend>
             <label>Nom :
                 <input name="nom"  type="text"  size="18" value="{{donnees.nom|default('')}}" />
                 {% if erreurs.nom is defined %}
