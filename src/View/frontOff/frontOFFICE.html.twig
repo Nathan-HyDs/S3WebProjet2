@@ -29,14 +29,13 @@
 			<table>
 				<caption>Produits</caption>
 				<thead>
-				<tr><th>nom</th><th>id</th><th>type</th><th>prix</th><th>nom photo</th><th>photo</th><th>stock</th><th>commande</th>
+				<tr><th>nom</th><th>type</th><th>prix</th><th>photo</th><th>stock</th><th>commande</th>
 				</tr>
 				</thead>
 				<tbody>
 				{% for produit in data if data is not empty %}
 					<tr>
-						<td>{{produit.nom}}</td><td>{{produit.id}}</td><td>{{produit.libelle}}</td><td>{{produit.prix}}€</td><td>
-							{{produit.photo}}</td><td>
+						<td>{{produit.nom}}</td><td>{{produit.libelle}}</td><td>{{produit.prix}}€</td><td>
 							<img style="width:70px;height:70px" src="{{asset('images/')}}{{produit.photo}}" alt="image de {{produit.libelle}}" >
 						</td>
 						<td>{{ produit.stock }}</td>
