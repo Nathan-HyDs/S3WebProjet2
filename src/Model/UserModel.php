@@ -89,5 +89,25 @@ class UserModel {
         return $queryBuilder->execute();
     }
 
+    public function insertUser($donnees) {
+        $queryBuilder = new QueryBuilder($this->db);
+        $queryBuilder
+            ->insert('users')
+            ->values([  'login' => '?',
+                        'password' => '?',
+                        'email' => '?',
+                        'nom' => '?',
+                        'code_postal'=>'?',
+                        'ville' => '?',
+                        'adresse'=>'?'])
+            ->setParameter(0, $donnees['login'])
+            ->setParameter(1, $donnees['password'])
+            ->setParameter(2, $donnees['email'])
+            ->setParameter(3, $donnees['nom'])
+            ->setParameter(4, $donnees['code_postal'])
+            ->setParameter(5, $donnees['ville'])
+            ->setParameter(6, $donnees['adresse']) ;
 
-}
+        return $queryBuilder->execute();
+
+}}

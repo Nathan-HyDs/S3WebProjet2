@@ -1,21 +1,59 @@
 
 {% extends "layout.html.twig" %}
 {% block contenu %}
-    <form method="post" action="{{ path('user.addUser') }}">
+    <form method="post" action="{{ path('user.validAddUser') }}">
 
         <div class="row">
 
             <fieldset>
-                <legend>Se connecter  (avec twig)</legend>
+                <legend>S'inscrire</legend>
                 <label>Login :
-                    <input name="login"  type="text"  size="18" value="" />
+                    <input name="login"  type="text"  size="18" value="{% if donnees.login is defined %}{{ donnees.login }}{% endif %}" />
                 </label>
+                {% if erreur.login is defined%}
+                    <small class="error">{{ erreur.login }}</small>
+                {% endif %}
 
                 <label>Password :
-                    <input name="password"  type="password"  size="18" value="" />
+                    <input name="password"  type="password"  size="18" value="{% if donnees.password is defined %}{{ donnees.password }}{% endif %}" />
                 </label>
-                {% if app.session.get('erreur') is not empty %}
-                    <small class="error">{{ app.session.get('erreur') }}</small>
+                {% if erreur.password is defined%}
+                    <small class="error">{{ erreur.password }}</small>
+                {% endif %}
+
+                <label>Nom :
+                    <input name="nom"  type="text"  size="18" value="{% if donnees.nom is defined %}{{ donnees.nom }}{% endif %}" />
+                </label>
+                {% if erreur.nom is defined%}
+                    <small class="error">{{ erreur.nom }}</small>
+                {% endif %}
+
+                <label>Code_postal :
+                    <input name="code_postal"  type="text"  size="18" value="{% if donnees.code_postal is defined %}{{ donnees.code_postal }}{% endif %}" />
+                </label>
+                {% if erreur.code_postal is defined%}
+                    <small class="error">{{ erreur.code_postal }}</small>
+                {% endif %}
+
+                <label>Ville :
+                    <input name="ville"  type="text"  size="18" value="{% if donnees.ville is defined %}{{ donnees.ville }}{% endif %}" />
+                </label>
+                {% if erreur.ville is defined%}
+                    <small class="error">{{ erreur.ville }}</small>
+                {% endif %}
+
+                <label>Adresse :
+                    <input name="adresse"  type="text"  size="18" value="{% if donnees.adresse is defined %}{{ donnees.adresse }}{% endif %}" />
+                </label>
+                {% if erreur.adresse is defined%}
+                    <small class="error">{{ erreur.adresse }}</small>
+                {% endif %}
+
+                <label>Email :
+                    <input name="email"  type="text"  size="18" value="{% if donnees.email is defined %}{{ donnees.email }}{% endif %}" />
+                </label>
+                {% if erreur.email is defined%}
+                    <small class="error">{{ erreur.email}}</small>
                 {% endif %}
 
                 <input type="submit" name="seConnecter" value="Se connecter" />

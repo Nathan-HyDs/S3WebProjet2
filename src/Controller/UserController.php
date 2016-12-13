@@ -186,17 +186,51 @@ class UserController implements ControllerProviderInterface {
     }
 
     public function addUser(Application $app){
-        /*
-         *
-         * Traitement des données
-         * Add dans le sql
-         * le connecté : utilise
-      		$app['session']->set('droit', $data['droit']);  //dans twig {{ app.session.get('droit') }}
-            $app['session']->set('login', $data['login']);
-			$app['session']->set('logged', 1);
-			$app['session']->set('user_id', $data['id']);
-         */
-        return $app->redirect($app["url_generator"]->generate("accueil"));
+        if($app['session']->get('droit')=='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("accueil"));
+        if($app['session']->get('droit')=='DROITclient')
+            return $app->redirect($app["url_generator"]->generate("accueil"));
+
+        return $app["twig"]->render('v_inscription.html.twig');
+
+    }
+    public function validAddUser(Application $app){
+        if($app['session']->get('droit')=='DROITadmin')
+            return $app->redirect($app["url_generator"]->generate("accueil"));
+        if($app['session']->get('droit')=='DROITclient')
+            return $app->redirect($app["url_generator"]->generate("accueil"));
+
+        if (isset($_POST['email']) and isset($_POST['nom']) and isset($_POST['ville']) and isset($_POST['code_postal']) and isset($_POST['adresse'])) {
+            $donnees = [
+                'nom' => htmlspecialchars($_POST["nom"]),
+                'ville' => htmlspecialchars($_POST["ville"]),
+                'code_postal' => htmlspecialchars($_POST["code_postal"]),
+                'adresse' => htmlspecialchars($_POST["adresse"]),
+                'login'=>htmlspecialchars($_POST["login"]),
+                'password'=>htmlspecialchars($_POST["password"]),
+                'email'=>htmlspecialchars($_POST['email'])
+            ];
+        }
+
+
+        if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['login']))) $erreurs['login']='login composé de 2 lettres minimum';
+        if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['nom']))) $erreurs['nom']='nom composé de 2 lettres minimum';
+        if (empty($donnees['password'])) $erreurs['password']='Mot de passe vide';
+        if ((! preg_match("/^([0-9a-z'àâéèêôùûçÀÂÉÈÔÙÛÇ\s-]{1,50})$/",$donnees['adresse']))) $erreurs['adresse']='adresse composé de 2 lettres minimum';
+        if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['ville']))) $erreurs['ville']='ville composé de 2 lettres minimum';
+        if(! is_numeric($donnees['code_postal']))$erreurs['code_postal']='veuillez saisir une valeur numérique';
+        if (!filter_var($donnees["email"], FILTER_VALIDATE_EMAIL)) {
+            $erreurs["email"]= "Invalid email format";
+        }
+
+        if(!empty($erreurs)){
+            return $app["twig"]->render('v_inscription.html.twig',["erreur"=>$erreurs, "donnees"=>$donnees]);
+        }else{
+            $this->userModel = new UserModel($app);
+            $this->userModel->insertUser($donnees);
+            return $app->redirect($app["url_generator"]->generate("accueil"));
+        }
+
     }
 
     public function connect(Application $app) {
@@ -214,7 +248,10 @@ class UserController implements ControllerProviderInterface {
 
         $controllers->get('/login', 'App\Controller\UserController::connexionUser')->bind('user.login');
 		$controllers->post('/login', 'App\Controller\UserController::validFormConnexionUser')->bind('user.validFormlogin');
-        $controllers->post('/addUser', 'App\Controller\UserController::addUser')->bind('user.addUser');
+
+        $controllers->match('/addUser', 'App\Controller\UserController::addUser')->bind('user.addUser');
+        $controllers->post('/validAddUser', 'App\Controller\UserController::validAddUser')->bind('user.validAddUser');
+
 
         $controllers->get('/logout', 'App\Controller\UserController::deconnexionSession')->bind('user.logout');
 		return $controllers;

@@ -22,6 +22,7 @@
                 <li class="name" style="color: #d58512">Connecté en tant que : {{ app.session.get('login') }}</li>
                 <li><a href="{{ path('user.logout')  }}">Se déconnecter</a></li>
             {% else %}
+                <li><a href="{{ path('user.addUser')  }}">S'inscire</a></li>
                 <li><a href="{{ path('user.login')  }}">Se connecter</a></li>
             {% endif %}
         </ul>
